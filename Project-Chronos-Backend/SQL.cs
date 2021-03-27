@@ -1,4 +1,4 @@
-﻿namespace ProjectChronosBackend
+﻿namespace Project_Chronos_Backend
 {
     public class Sql
     {

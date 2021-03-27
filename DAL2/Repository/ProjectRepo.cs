@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using DAL.DataTransferObjects;
+using DAL.Interfaces;
+using DAL.SQL;
 using Dapper;
 using Microsoft.Extensions.Options;
-using Project_Chronos_Backend.DAL.DataTransferObjects;
-using Project_Chronos_Backend.DAL.Interfaces;
-using Project_Chronos_Backend.DAL.SQL;
-using Project_Chronos_Backend.Objects;
-using ProjectChronosBackend.DAL;
 
-namespace Project_Chronos_Backend.DAL.Repository
+namespace DAL.Repository
 {
-    public class ProjectRepo: BaseRepository, IProjectRepo
+    public class ProjectRepo : BaseRepository, IProjectRepo
     {
         //private string _con;
 
@@ -23,28 +21,35 @@ namespace Project_Chronos_Backend.DAL.Repository
 
         public IEnumerable<ProjectTaskDto> GetProjects(IEnumerable<int> projectIds)
         {
-            return ExecuteFunc((con) =>
-                con.Query<ProjectTaskDto>(ProjectSql.GetProjectAndTasks, new { ProjectIds = projectIds }));
+            return ExecuteFunc(con =>
+                con.Query<ProjectTaskDto>(ProjectSql.GetProjectAndTasks, new {ProjectIds = projectIds}));
         }
-        public IEnumerable<ProjectObject> GetProject(int projectId)
+
+        public IEnumerable<ProjectDto> GetProject(int projectId)
         {
-            return ExecuteFunc((con) =>
-                con.Query<ProjectObject>(ProjectSql.GetProject, new { ProjectId = projectId }));
+            return ExecuteFunc(con =>
+                con.Query<ProjectDto>(ProjectSql.GetProject, new {ProjectId = projectId}));
         }
 
         public int CreateProject(IEnumerable<string> projectName)
         {
-            var result =  ExecuteFunc((con) => con.QuerySingleOrDefault<int>(ProjectSql.CreateProject,  new{ProjectName = projectName}));
+            var result = ExecuteFunc(con =>
+                con.QuerySingleOrDefault<int>(ProjectSql.CreateProject, new {ProjectName = projectName}));
 
             return result;
         }
+
         public int CreateColumn(IEnumerable<string> columnName, int projectId)
         {
             var dtCol = new DataTable();
             dtCol.Columns.Add("ColumnName");
             dtCol.Rows.Add(columnName);
-            
-            var result = ExecuteFunc((con) => con.QuerySingleOrDefault<int>(ProjectSql.CreateColumn, new { ColumnName = columnName, ProjectId = projectId, Columns = dtCol.AsTableValuedParameter("TVP_Column") }));
+
+            var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.CreateColumn,
+                new
+                {
+                    ColumnName = columnName, ProjectId = projectId, Columns = dtCol.AsTableValuedParameter("TVP_Column")
+                }));
 
             return result;
         }
@@ -54,37 +59,48 @@ namespace Project_Chronos_Backend.DAL.Repository
             var dt = new DataTable();
             dt.Columns.Add("Name");
             dt.Columns.Add("Comments");
-            dt.Rows.Add(taskName,comments);
+            dt.Rows.Add(taskName, comments);
 
-            var result = ExecuteFunc((con) => con.QuerySingleOrDefault<int>(ProjectSql.CreateTask, new {ColumnId = columnId, Tasks = dt.AsTableValuedParameter("TVP_Task"), TaskName = taskName, Comments = comments }));
+            var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.CreateTask,
+                new
+                {
+                    ColumnId = columnId, Tasks = dt.AsTableValuedParameter("TVP_Task"), TaskName = taskName,
+                    Comments = comments
+                }));
 
             return result;
         }
+
         public int CreateUser(string userName, string role)
         {
             var dt = new DataTable();
             dt.Columns.Add("UserName");
             dt.Columns.Add("Role");
             dt.Rows.Add(userName, role);
-            var result = ExecuteFunc((con) => con.QuerySingleOrDefault<int>(ProjectSql.CreateUser, new { UserName = userName, Role = role }));
+            var result = ExecuteFunc(con =>
+                con.QuerySingleOrDefault<int>(ProjectSql.CreateUser, new {UserName = userName, Role = role}));
             return result;
         }
+
         public int SetTaskUser(int taskId, int userId)
         {
             var dt = new DataTable();
             dt.Columns.Add("TaskId");
             dt.Columns.Add("UserId");
             dt.Rows.Add(taskId, userId);
-            var result = ExecuteFunc((con) => con.QuerySingleOrDefault<int>(ProjectSql.SetTaskUser, new { UserId = userId, TaskId = taskId }));
+            var result = ExecuteFunc(con =>
+                con.QuerySingleOrDefault<int>(ProjectSql.SetTaskUser, new {UserId = userId, TaskId = taskId}));
             return result;
         }
+
         public int SetProjectUser(int projectId, int userId)
         {
             var dt = new DataTable();
             dt.Columns.Add("ProjectId");
             dt.Columns.Add("UserId");
             dt.Rows.Add(projectId, userId);
-            var result = ExecuteFunc((con) => con.QuerySingleOrDefault<int>(ProjectSql.SetProjectUser, new { ProjectId = projectId, UserId = userId }));
+            var result = ExecuteFunc(con =>
+                con.QuerySingleOrDefault<int>(ProjectSql.SetProjectUser, new {ProjectId = projectId, UserId = userId}));
             return result;
         }
 
@@ -96,11 +112,13 @@ namespace Project_Chronos_Backend.DAL.Repository
             dt.Columns.Add("TotalTime", typeof(float));
             dt.Rows.Add(startTime, endTime, totalTime);
 
-            var result = ExecuteFunc((con) => con.QuerySingleOrDefault<int>(ProjectSql.CreateTimeLog, new { TimeLogs = dt.AsTableValuedParameter("TVP_TimeLogs"), UserId = userId, TaskId = taskId }));
+            var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.CreateTimeLog,
+                new {TimeLogs = dt.AsTableValuedParameter("TVP_TimeLogs"), UserId = userId, TaskId = taskId}));
 
             return result;
         }
-        public int Create(ProjectObject project)
+
+        public int Create(ProjectDto project)
         {
             // create data table from tasks
             var dt = new DataTable();
@@ -158,7 +176,8 @@ namespace Project_Chronos_Backend.DAL.Repository
                     dt.Rows.Add(task.TaskName, task.Comments);
                     foreach (var timelog in task.Timelogs)
                     {
-                        dtTim.Rows.Add(timelog.StartTime.ToString("yyyy-MM-dd HH:mm:ss.fff"), timelog.EndTime.ToString("yyyy-MM-dd HH:mm:ss.fff"), timelog.TotalTime);
+                        dtTim.Rows.Add(timelog.StartTime.ToString("yyyy-MM-dd HH:mm:ss.fff"),
+                            timelog.EndTime.ToString("yyyy-MM-dd HH:mm:ss.fff"), timelog.TotalTime);
                         dltTt.Rows.Add(task.TaskId, timelog.TimeLogId);
                     }
 
@@ -172,18 +191,17 @@ namespace Project_Chronos_Backend.DAL.Repository
                 }
 
                 dltPc.Rows.Add(project.ProjectId, col.ColumnId);
-
             }
 
             // Execute the sql, pass in project name and the data table
-            var result = ExecuteFunc((con) => con.Query(ProjectSql.CreateProjectAndTasks,
+            var result = ExecuteFunc(con => con.Query(ProjectSql.CreateProjectAndTasks,
                 new
                 {
-                    ProjectName = project.ProjectName, 
+                    project.ProjectName,
                     Columns = dtCol.AsTableValuedParameter("TVP_Column"),
                     Tasks = dt.AsTableValuedParameter("TVP_Task"),
                     Timelogs = dtTim.AsTableValuedParameter("TVP_Timelogs"),
-                    Users = dtUse.AsTableValuedParameter("TVP_User"),
+                    Users = dtUse.AsTableValuedParameter("TVP_User")
                     //UserTimeLogs = dltUT.AsTableValuedParameter("TVP_UserTimeLog"),
                     //ColumnTasks = dltCT.AsTableValuedParameter("TVP_ColumnTask"),
                     //ProjectUsers = dltPU.AsTableValuedParameter("TVP_ProjectUser"),
@@ -191,7 +209,7 @@ namespace Project_Chronos_Backend.DAL.Repository
                     //UserTasks = dltUT.AsTableValuedParameter("TVP_UserTask")
                 }));
 
-            var res = ExecuteFunc((con) => con.Query(ProjectSql.CreatLinks,
+            var res = ExecuteFunc(con => con.Query(ProjectSql.CreatLinks,
                 new
                 {
                     UserTimeLogs = dltUt.AsTableValuedParameter("TVP_UserTimeLog"),

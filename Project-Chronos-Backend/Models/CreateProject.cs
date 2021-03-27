@@ -1,6 +1,6 @@
-﻿using Project_Chronos_Backend.Objects;
+﻿using Project_Chronos_Backend.BusinessObjects;
 
-namespace Project_Chronos_Backend.API.Models
+namespace Project_Chronos_Backend.Models
 {
 
     // Using the https://refactoring.guru/design-patterns/command pattern

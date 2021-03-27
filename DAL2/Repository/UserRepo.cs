@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Options;
-using ProjectChronosBackend.DAL.Interfaces;
+﻿using DAL.Interfaces;
+using Microsoft.Extensions.Options;
 
-namespace ProjectChronosBackend.DAL.Repository
+namespace DAL.Repository
 {
     public class UserRepo :  IUserRepo
     {
@@ -11,9 +11,6 @@ namespace ProjectChronosBackend.DAL.Repository
         {
             _con = connectionStrings.Value.SqlServer1;
         }
-
-
-
 
         public bool IsUserAdmin(string token)
         {

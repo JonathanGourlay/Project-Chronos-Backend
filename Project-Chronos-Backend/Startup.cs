@@ -1,16 +1,14 @@
 using System.Threading.Tasks;
-using ProjectChronosBackend.DAL;
-using ProjectChronosBackend.DAL.Interfaces;
-using ProjectChronosBackend.DAL.Repository;
+using DAL;
+using DAL.Interfaces;
+using DAL.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using Project_Chronos_Backend.DAL.Interfaces;
-using Project_Chronos_Backend.DAL.Repository;
 
-namespace ProjectChronosBackend
+namespace Project_Chronos_Backend
 {
     public class Startup
     {

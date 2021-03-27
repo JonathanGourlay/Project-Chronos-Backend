@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
-using ProjectChronosBackend.DAL;
 using Serilog;
 
-namespace Project_Chronos_Backend.DAL.Repository
+namespace DAL.Repository
 {
     public class BaseRepository
     {

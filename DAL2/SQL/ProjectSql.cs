@@ -1,4 +1,4 @@
-﻿namespace Project_Chronos_Backend.DAL.SQL
+﻿namespace DAL.SQL
 {
     public static class ProjectSql
     {
@@ -147,17 +147,17 @@
         VALUES(@UserId, @ProjectId)
         ";
         public static string CreateTimeLog = @"
-		DECLARE @generated_timelog_key int
+		DECLARE @generated_timelog_key as TABLE(Id INT)
 
         INSERT INTO [dbo].[TimeLogs](StartTime, EndTime, TotalTime)
+        OUTPUT INSERTED.TimeLogId INTO @generated_timelog_key
         SELECT StartTime, EndTime, TotalTime
         FROM @TimeLogs
      
-		SET @generated_timelog_key = @@IDENTITY
-
         INSERT INTO [dbo].[UserTimeLogs](UserId, TimeLogId)
         OUTPUT INSERTED.UTLID
-        VALUES(@UserId, @generated_timelog_key)
+        SELECT Id, @UserId
+        FROM @generated_timelog_key
         ";
     }
 }

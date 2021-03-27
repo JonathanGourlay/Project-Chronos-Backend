@@ -1,4 +1,4 @@
-﻿namespace ProjectChronosBackend.DAL.Interfaces
+﻿namespace DAL.Interfaces
 {
     public interface IUserRepo
     {

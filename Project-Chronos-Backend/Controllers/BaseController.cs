@@ -2,7 +2,7 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Project_Chronos_Backend.API.Controllers
+namespace Project_Chronos_Backend.Controllers
 {
     [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
     public class BaseController : ControllerBase

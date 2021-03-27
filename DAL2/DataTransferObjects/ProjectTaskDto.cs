@@ -1,4 +1,4 @@
-﻿namespace Project_Chronos_Backend.DAL.DataTransferObjects
+﻿namespace DAL.DataTransferObjects
 {
     public class ProjectTaskDto
     {

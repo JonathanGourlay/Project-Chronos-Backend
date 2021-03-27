@@ -1,4 +1,4 @@
-﻿namespace ProjectChronosBackend.DAL
+﻿namespace DAL
 {
     public class ConnectionStrings
     {
