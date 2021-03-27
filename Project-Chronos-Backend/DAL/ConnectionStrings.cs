@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace ADBackend.DAL
+﻿namespace ProjectChronosBackend.DAL
 {
     public class ConnectionStrings
     {
-        public string SQLServer { get; set; }
-        public string DataStore { get; set; }
+        public string SqlServer1 { get; set; }
+        public string SqlServer2 { get; set; }
     }
 }

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace ADBackend
+﻿namespace ProjectChronosBackend
 {
-    public class SQL
+    public class Sql
     {
         public const string GetItems = @"
         SELECT TOP (1000)
@@ -18,7 +13,7 @@ namespace ADBackend
           FROM [dbo].[Items_Table]
         ";
 
-        public const string GetItemByID = @"
+        public const string GetItemById = @"
         SELECT TOP (1000)
 	        [ItemID]
               ,[Name]

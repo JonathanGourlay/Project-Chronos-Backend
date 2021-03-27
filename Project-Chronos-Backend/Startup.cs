@@ -1,23 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using ADBackend.DAL;
-using ADBackend.DAL.Interfaces;
-using ADBackend.DAL.Repository;
-using FirebaseAdmin;
-using Google.Apis.Auth.OAuth2;
+using ProjectChronosBackend.DAL;
+using ProjectChronosBackend.DAL.Interfaces;
+using ProjectChronosBackend.DAL.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Project_Chronos_Backend.DAL.Interfaces;
+using Project_Chronos_Backend.DAL.Repository;
 
-namespace ADBackend
+namespace ProjectChronosBackend
 {
     public class Startup
     {
@@ -63,7 +56,7 @@ namespace ADBackend
 
             });
 
-            services.AddSingleton<IItemRepo, ItemRepo>();
+            services.AddSingleton<IProjectRepo, ProjectRepo>();
             services.AddSingleton<IUserRepo, UserRepo>();
             services.Configure<ConnectionStrings>(option =>
                 Configuration.GetSection("ConnectionStrings").Bind(option));
@@ -73,11 +66,7 @@ namespace ADBackend
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "C:\\Users\\acid_\\UserSecrets\\AD Assignment One secrets.json");
-            }
+           
 
             app.UseHttpsRedirection();
 
@@ -91,7 +80,7 @@ namespace ADBackend
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("../swagger/v1/swagger.json", "AD Backend");
+                c.SwaggerEndpoint("../swagger/v1/swagger.json", "Porject Chronos Backend");
             });
 
             app.UseEndpoints(endpoints =>
@@ -102,11 +91,6 @@ namespace ADBackend
                     return Task.FromResult(0);
                 });
                 endpoints.MapControllers();
-            });
-
-            FirebaseApp.Create(new AppOptions()
-            {
-                Credential = GoogleCredential.GetApplicationDefault(),
             });
         }
     }
