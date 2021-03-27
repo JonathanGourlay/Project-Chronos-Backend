@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "Project-Chronos-Backend\API.csproj", "{732C60D7-64C6-494D-BDAC-B18CCB954BC2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL2\DAL.csproj", "{4580C97F-CECE-45F5-AA9A-DA899D7F3111}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{4580C97F-CECE-45F5-AA9A-DA899D7F3111}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
