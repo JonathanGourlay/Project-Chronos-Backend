@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using DAL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -21,13 +22,13 @@ namespace Project_Chronos_Backend.Controllers
             _projectRepo = projectRepo;
         }
 
-        [HttpPost]
-        [Route("GetProjects")]
-        [ProducesResponseType(typeof(List<ProjectObject>), 200)]
-        public IActionResult GetProjects([FromBody] List<int> projectIds)
-        {
-            return MapToIActionResult(() => _projectRepo.GetProjects(projectIds));
-        }
+        //[HttpPost]
+        //[Route("GetProjects")]
+        //[ProducesResponseType(typeof(List<ProjectObject>), 200)]
+        //public IActionResult GetProjects([FromBody] List<int> projectIds)
+        //{
+        //    return MapToIActionResult(() => _projectRepo.GetProjects(projectIds));
+        //}
 
         [HttpPost]
         [Route("GetProject")]
@@ -48,17 +49,17 @@ namespace Project_Chronos_Backend.Controllers
         [HttpPost]
         [Route("CreateColumn")]
         [ProducesResponseType(typeof(int), (int) HttpStatusCode.OK)]
-        public IActionResult CreateColumn([FromBody] IEnumerable<string> columnName, int projectId)
+        public IActionResult CreateColumn([FromBody] CreateColumn column)
         {
-            return MapToIActionResult(() => _projectRepo.CreateColumn(columnName, projectId));
+            return MapToIActionResult(() => _projectRepo.CreateColumn(column.columnName, column.projectId));
         }
 
         [HttpPost]
         [Route("CreateTask")]
         [ProducesResponseType(typeof(int), (int) HttpStatusCode.OK)]
-        public IActionResult CreateTask([FromBody] TaskObject task, int columnId)
+        public IActionResult CreateTask([FromBody] CreateTask task)
         {
-            return MapToIActionResult(() => _projectRepo.CreateTask(task.TaskName, task.Comments, columnId));
+            return MapToIActionResult(() => _projectRepo.CreateTask(task.taskName, task.comments, task.columnId));
         }
 
         [HttpPost]
@@ -96,5 +97,43 @@ namespace Project_Chronos_Backend.Controllers
         {
             return MapToIActionResult(() => _projectRepo.SetTaskUser(taskId, userId));
         }
+        [HttpPost]
+        [Route("UpdateProject")]
+        [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
+        public IActionResult UpdateProject(string projectName, int projectId)
+        {
+            return MapToIActionResult(() => _projectRepo.UpdateProject(projectName,projectId));
+        }
+        [HttpPost]
+        [Route("UpdateColumn")]
+        [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
+        public IActionResult UpdateColumn(string columnName, int columnId)
+        {
+            return MapToIActionResult(() => _projectRepo.UpdateColumn(columnName, columnId));
+        }
+        [HttpPost]
+        [Route("UpdateTask")]
+        [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
+        public IActionResult UpdateTask(string taskName,string comments, int taskId)
+        {
+            return MapToIActionResult(() => _projectRepo.UpdateTask(taskName,comments,taskId));
+        }
+        [HttpPost]
+        [Route("UpdateTimeLog")]
+        [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
+        public IActionResult UpdateTimeLog(CreateTimeLog timelog, int timelogId)
+        {
+           
+            return MapToIActionResult(() => _projectRepo.UpdateTimeLog( timelog.timeLog.StartTime, timelog.timeLog.EndTime, timelog.timeLog.TotalTime, timelogId));
+        }
+        [HttpPut]
+        [Route("UpdateUser")]
+        [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
+        public IActionResult UpdateUser(string userName, string role, int userId)
+        {
+
+            return MapToIActionResult(() => _projectRepo.UpdateUser(userName, role, userId));
+        }
+
     }
 }

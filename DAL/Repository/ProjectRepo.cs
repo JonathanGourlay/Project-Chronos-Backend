@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
 using DAL.DataTransferObjects;
 using DAL.Interfaces;
 using DAL.SQL;
@@ -11,24 +13,65 @@ namespace DAL.Repository
 {
     public class ProjectRepo : BaseRepository, IProjectRepo
     {
-        //private string _con;
 
         public ProjectRepo(IOptions<ConnectionStrings> connectionStrings)
             : base(connectionStrings.Value)
         {
-            //_con = connectionStrings.Value.SQLServer;
-        }
-
-        public IEnumerable<ProjectTaskDto> GetProjects(IEnumerable<int> projectIds)
-        {
-            return ExecuteFunc(con =>
-                con.Query<ProjectTaskDto>(ProjectSql.GetProjectAndTasks, new {ProjectIds = projectIds}));
+           //_con = connectionStrings.Value.SQLServer;
         }
 
         public IEnumerable<ProjectDto> GetProject(int projectId)
         {
-            return ExecuteFunc(con =>
-                con.Query<ProjectDto>(ProjectSql.GetProject, new {ProjectId = projectId}));
+            var (enumeratedColumnDtos, enumeratedTaskDtos, timeLogDtos, usersDtos, projectDto, usersTasksDtos ) =  ExecuteFunc(con =>
+                {
+                    var query = con.QueryMultiple(ProjectSql.GetProject, new {ProjectId = projectId});
+                    var timeLogs = query.Read<TimeLogViewDto>();
+                    var users = query.Read<UserDto>();
+                    var usersTasks = query.Read<UserViewDto>();
+                    var tasks = query.Read<TaskViewDto>();
+                    var columns = query.Read<ColumnDto>();
+                    var projects = query.Read<ProjectViewDto>().First();
+                    return (columns.ToList(), tasks.ToList(), timeLogs.ToList(), users.ToList(), projects, usersTasks.ToList());
+                }
+            );
+
+            // aint this a mess
+
+            foreach (var columnDto in enumeratedColumnDtos)
+            {
+                foreach (var taskViewDto in enumeratedTaskDtos)
+                {
+                    var thisTasksTimelogs = new List<TimeLogViewDto>();
+                    
+                    if (columnDto.ColumnId == taskViewDto.userColId || columnDto.ColumnId == taskViewDto.timelogColId)
+                    {
+                        var thisTasksUsers = new List<UserViewDto>();
+                        // Get the timelogs related to this task
+                        foreach (var timelog in timeLogDtos)
+                        {
+                            if (timelog.linkTimelogTaskId == taskViewDto.TaskId) thisTasksTimelogs.Add(timelog);
+                        }
+                        // Get the users related to this task
+                        foreach (var user in usersTasksDtos)
+                        {
+                            if (user.linkUserTaskId == taskViewDto.TaskId) thisTasksUsers.Add(user);
+                        }
+
+                        var task = new TaskDto(taskViewDto);
+                        // Turn timelog views into normal timelog dtos
+                        var timelogs = thisTasksTimelogs.Select(t => new TimeLogDto(t)).ToList();
+                        var users = thisTasksUsers.Select(u => new UserDto(u)).ToList();
+                        // Add the timelogs to the task
+                        task.AddTimelog(timelogs);
+                        task.AddUser(users);
+                        // Add the task to the column
+                        columnDto.AddTask(task);
+
+                    }
+                }
+            }
+
+            return new List<ProjectDto>() { new ProjectDto(projectDto, usersDtos, enumeratedColumnDtos) };
         }
 
         public int CreateProject(IEnumerable<string> projectName)
@@ -38,8 +81,19 @@ namespace DAL.Repository
 
             return result;
         }
+        public int UpdateProject(string projectName, int projectId)
+        {
+            var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.UpdateProject,
+                new
+                {
+                    ProjectName = projectName,
+                   ProjectId = projectId
+                }));
 
-        public int CreateColumn(IEnumerable<string> columnName, int projectId)
+            return result;
+
+        }
+        public int CreateColumn(string columnName, int projectId)
         {
             var dtCol = new DataTable();
             dtCol.Columns.Add("ColumnName");
@@ -53,6 +107,23 @@ namespace DAL.Repository
 
             return result;
         }
+        public int UpdateColumn(string columnName, int columnId)
+        {
+
+            var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.UpdateColumn,
+                new
+                {
+                    ColumnName = columnName,
+                    ColumnId = columnId
+                }));
+
+            return result;
+        }
+        public int DeleteColumn( int columnId)
+        {
+
+            return 1;
+        }
 
         public int CreateTask(string taskName, string comments, int columnId)
         {
@@ -64,11 +135,30 @@ namespace DAL.Repository
             var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.CreateTask,
                 new
                 {
-                    ColumnId = columnId, Tasks = dt.AsTableValuedParameter("TVP_Task"), TaskName = taskName,
+                    ColumnId = columnId, 
+                    Tasks = dt.AsTableValuedParameter("TVP_Task"), TaskName = taskName,
                     Comments = comments
                 }));
 
             return result;
+        }
+        public int UpdateTask(string taskName, string comments, int taskId)
+        {
+            var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.UpdateTask,
+                new
+                {
+                    TaskName = taskName,
+                    Comments = comments,
+                    TaskId = taskId
+                }));
+
+            return result;
+
+        }
+        public int DeleteTask( int taskId)
+        {
+
+            return 1;
         }
 
         public int CreateUser(string userName, string role)
@@ -80,6 +170,24 @@ namespace DAL.Repository
             var result = ExecuteFunc(con =>
                 con.QuerySingleOrDefault<int>(ProjectSql.CreateUser, new {UserName = userName, Role = role}));
             return result;
+        }
+        public int UpdateUser(string userName, string role, int userId)
+        {
+
+            var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.UpdateUser,
+                new
+                {
+                    UserName = userName,
+                    Role = role,
+                    UserId = userId
+                }));
+
+            return result;
+        }
+        public int DeleteUser(int userId)
+        {
+
+            return 1;
         }
 
         public int SetTaskUser(int taskId, int userId)
@@ -117,110 +225,128 @@ namespace DAL.Repository
 
             return result;
         }
-
-        public int Create(ProjectDto project)
+        public int UpdateTimeLog(DateTime startTime, DateTime endTime, float totalTime, int timelogId)
         {
-            // create data table from tasks
-            var dt = new DataTable();
-            dt.Columns.Add("Name");
-            dt.Columns.Add("Comments");
-
-            var dtCol = new DataTable();
-            dtCol.Columns.Add("ColumnName");
-
-            var dtTim = new DataTable();
-            dtTim.Columns.Add("StartTime");
-            dtTim.Columns.Add("EndTime");
-            dtTim.Columns.Add("TotalTime");
-
-            var dtUse = new DataTable();
-            dtUse.Columns.Add("UserName");
-            dtUse.Columns.Add("Role");
-
-            var dltCt = new DataTable();
-            dltCt.Columns.Add("ColumnId");
-            dltCt.Columns.Add("TaskId");
-
-            var dltPc = new DataTable();
-            dltPc.Columns.Add("ProjectId");
-            dltPc.Columns.Add("ColumnId");
-
-            var dltTt = new DataTable();
-            dltTt.Columns.Add("TaskId");
-            dltTt.Columns.Add("TimeLogId");
-
-            var dltUt = new DataTable();
-            dltUt.Columns.Add("UserId");
-            dltUt.Columns.Add("TimeLogId");
-
-            var dltTu = new DataTable();
-            dltTu.Columns.Add("TaskId");
-            dltTu.Columns.Add("UserId");
-
-            var dltPu = new DataTable();
-            dltPu.Columns.Add("ProjectId");
-            dltPu.Columns.Add("UserId");
-
-            foreach (var user in project.Users)
-            {
-                dltPu.Rows.Add(project.ProjectId, user.PersonId);
-                dtUse.Rows.Add(user.UserName, user.Role);
-            }
-
-            // Add all the rows to table
-            foreach (var col in project.Columns)
-            {
-                dtCol.Rows.Add(col.ColumnName);
-                foreach (var task in col.Tasks)
-                {
-                    dt.Rows.Add(task.TaskName, task.Comments);
-                    foreach (var timelog in task.Timelogs)
-                    {
-                        dtTim.Rows.Add(timelog.StartTime.ToString("yyyy-MM-dd HH:mm:ss.fff"),
-                            timelog.EndTime.ToString("yyyy-MM-dd HH:mm:ss.fff"), timelog.TotalTime);
-                        dltTt.Rows.Add(task.TaskId, timelog.TimeLogId);
-                    }
-
-                    foreach (var user in task.Users)
-                    {
-                        dtUse.Rows.Add(user.UserName, user.Role);
-                        dltTu.Rows.Add(task.TaskId, user.PersonId);
-                    }
-
-                    dltCt.Rows.Add(col.ColumnId, task.TaskId);
-                }
-
-                dltPc.Rows.Add(project.ProjectId, col.ColumnId);
-            }
-
-            // Execute the sql, pass in project name and the data table
-            var result = ExecuteFunc(con => con.Query(ProjectSql.CreateProjectAndTasks,
+            var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.UpdateTimeLog,
                 new
                 {
-                    project.ProjectName,
-                    Columns = dtCol.AsTableValuedParameter("TVP_Column"),
-                    Tasks = dt.AsTableValuedParameter("TVP_Task"),
-                    Timelogs = dtTim.AsTableValuedParameter("TVP_Timelogs"),
-                    Users = dtUse.AsTableValuedParameter("TVP_User")
-                    //UserTimeLogs = dltUT.AsTableValuedParameter("TVP_UserTimeLog"),
-                    //ColumnTasks = dltCT.AsTableValuedParameter("TVP_ColumnTask"),
-                    //ProjectUsers = dltPU.AsTableValuedParameter("TVP_ProjectUser"),
-                    //TaskTimeLogs = dltTT.AsTableValuedParameter("TVP_TaskTimeLog"),
-                    //UserTasks = dltUT.AsTableValuedParameter("TVP_UserTask")
+                    StartTime = startTime,
+                    EndTime = endTime,
+                    TotalTime = totalTime,
+                    TimeLogId = timelogId
                 }));
 
-            var res = ExecuteFunc(con => con.Query(ProjectSql.CreatLinks,
-                new
-                {
-                    UserTimeLogs = dltUt.AsTableValuedParameter("TVP_UserTimeLog"),
-                    ColumnTasks = dltCt.AsTableValuedParameter("TVP_ColumnTask"),
-                    ProjectUsers = dltPu.AsTableValuedParameter("TVP_ProjectUser"),
-                    TaskTimeLogs = dltTt.AsTableValuedParameter("TVP_TaskTimeLog"),
-                    UserTasks = dltUt.AsTableValuedParameter("TVP_UserTask"),
-                    ProjectColumns = dltPc.AsTableValuedParameter("TVP_ProjectColumns")
-                }));
-            // result is the PK of project table
+            return result;
+        }
+        public int DeleteTimeLog(int timelogId)
+        {
+
             return 1;
         }
+
+        //public int Create(ProjectDto project)
+        //{
+        //    // create data table from tasks
+        //    var dt = new DataTable();
+        //    dt.Columns.Add("Name");
+        //    dt.Columns.Add("Comments");
+
+        //    var dtCol = new DataTable();
+        //    dtCol.Columns.Add("ColumnName");
+
+        //    var dtTim = new DataTable();
+        //    dtTim.Columns.Add("StartTime");
+        //    dtTim.Columns.Add("EndTime");
+        //    dtTim.Columns.Add("TotalTime");
+
+        //    var dtUse = new DataTable();
+        //    dtUse.Columns.Add("UserName");
+        //    dtUse.Columns.Add("Role");
+
+        //    var dltCt = new DataTable();
+        //    dltCt.Columns.Add("ColumnId");
+        //    dltCt.Columns.Add("TaskId");
+
+        //    var dltPc = new DataTable();
+        //    dltPc.Columns.Add("ProjectId");
+        //    dltPc.Columns.Add("ColumnId");
+
+        //    var dltTt = new DataTable();
+        //    dltTt.Columns.Add("TaskId");
+        //    dltTt.Columns.Add("TimeLogId");
+
+        //    var dltUt = new DataTable();
+        //    dltUt.Columns.Add("UserId");
+        //    dltUt.Columns.Add("TimeLogId");
+
+        //    var dltTu = new DataTable();
+        //    dltTu.Columns.Add("TaskId");
+        //    dltTu.Columns.Add("UserId");
+
+        //    var dltPu = new DataTable();
+        //    dltPu.Columns.Add("ProjectId");
+        //    dltPu.Columns.Add("UserId");
+
+        //    foreach (var user in project.Users)
+        //    {
+        //        dltPu.Rows.Add(project.ProjectId, user.UserId);
+        //        dtUse.Rows.Add(user.UserName, user.Role);
+        //    }
+
+        //    // Add all the rows to table
+        //    foreach (var col in project.Columns)
+        //    {
+        //        dtCol.Rows.Add(col.ColumnName);
+        //        foreach (var task in col.Tasks)
+        //        {
+        //            dt.Rows.Add(task.TaskName, task.Comments);
+        //            foreach (var timelog in task.Timelogs)
+        //            {
+        //                dtTim.Rows.Add(timelog.StartTime.ToString("yyyy-MM-dd HH:mm:ss.fff"),
+        //                    timelog.EndTime.ToString("yyyy-MM-dd HH:mm:ss.fff"), timelog.TotalTime);
+        //                dltTt.Rows.Add(task.TaskId, timelog.TimeLogId);
+        //            }
+
+        //            foreach (var user in task.Users)
+        //            {
+        //                dtUse.Rows.Add(user.UserName, user.Role);
+        //                dltTu.Rows.Add(task.TaskId, user.UserId);
+        //            }
+
+        //            dltCt.Rows.Add(col.ColumnId, task.TaskId);
+        //        }
+
+        //        dltPc.Rows.Add(project.ProjectId, col.ColumnId);
+        //    }
+
+        //    // Execute the sql, pass in project name and the data table
+        //    var result = ExecuteFunc(con => con.Query(ProjectSql.CreateProjectAndTasks,
+        //        new
+        //        {
+        //            project.ProjectName,
+        //            Columns = dtCol.AsTableValuedParameter("TVP_Column"),
+        //            Tasks = dt.AsTableValuedParameter("TVP_Task"),
+        //            Timelogs = dtTim.AsTableValuedParameter("TVP_Timelogs"),
+        //            Users = dtUse.AsTableValuedParameter("TVP_User")
+        //            //UserTimeLogs = dltUT.AsTableValuedParameter("TVP_UserTimeLog"),
+        //            //ColumnTasks = dltCT.AsTableValuedParameter("TVP_ColumnTask"),
+        //            //ProjectUsers = dltPU.AsTableValuedParameter("TVP_ProjectUser"),
+        //            //TaskTimeLogs = dltTT.AsTableValuedParameter("TVP_TaskTimeLog"),
+        //            //UserTasks = dltUT.AsTableValuedParameter("TVP_UserTask")
+        //        }));
+
+        //    var res = ExecuteFunc(con => con.Query(ProjectSql.CreatLinks,
+        //        new
+        //        {
+        //            UserTimeLogs = dltUt.AsTableValuedParameter("TVP_UserTimeLog"),
+        //            ColumnTasks = dltCt.AsTableValuedParameter("TVP_ColumnTask"),
+        //            ProjectUsers = dltPu.AsTableValuedParameter("TVP_ProjectUser"),
+        //            TaskTimeLogs = dltTt.AsTableValuedParameter("TVP_TaskTimeLog"),
+        //            UserTasks = dltUt.AsTableValuedParameter("TVP_UserTask"),
+        //            ProjectColumns = dltPc.AsTableValuedParameter("TVP_ProjectColumns")
+        //        }));
+        //    // result is the PK of project table
+        //    return 1;
+        //}
     }
 }

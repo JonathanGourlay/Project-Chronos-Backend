@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Project_Chronos_Backend.Controllers
 {
     [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
-    public class BaseController : ControllerBase
+    public abstract class BaseController : ControllerBase
     {
         protected IActionResult MapToIActionResult<T>(Func<T> getData)
         {

@@ -8,5 +8,15 @@ namespace DAL.DataTransferObjects
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public float TotalTime { get; set; }
+
+        public TimeLogDto(){}
+
+        public TimeLogDto(TimeLogViewDto dto)
+        {
+            TimeLogId = dto.TimeLogId;
+            StartTime = dto.StartTime;
+            EndTime = dto.EndTime;
+            TotalTime = dto.TotalTime;
+        }
     }
 }

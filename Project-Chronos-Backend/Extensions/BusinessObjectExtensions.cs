@@ -9,6 +9,10 @@ namespace Project_Chronos_Backend.Extensions
 {
     public static class BusinessObjectExtensions
     {
+        public static List<ProjectDto> ToDto(this List<ProjectObject> project)
+        {
+            return project.Select(t => t.ToDto()).ToList();
+        }
         public static List<ColumnDto> ToDto(this List<ColumnObject> columns)
         {
             return columns.Select(col => col.ToDto()).ToList();
@@ -28,5 +32,8 @@ namespace Project_Chronos_Backend.Extensions
         {
             return tasks.Select(t => t.ToDto()).ToList();
         }
+
+
+
     }
 }

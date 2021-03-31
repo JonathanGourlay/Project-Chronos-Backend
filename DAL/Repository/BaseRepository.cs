@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using Dapper;
 using Serilog;
 
 namespace DAL.Repository
 {
     public class BaseRepository
     {
-        private readonly string _sqlconnectionString;
+        // TODO : ONCE YOU HAVE GENERIC MULTI QUERY MAKE THIS PRIVATE AGAIN I WAS NAUGHTY
+        protected readonly string _sqlconnectionString;
 
         protected BaseRepository(ConnectionStrings connectionStrings)
         {
@@ -35,6 +37,8 @@ namespace DAL.Repository
                 throw new Exception(exceptionMsg, ex);
             }
         }
+
+     
     }
 }
 
