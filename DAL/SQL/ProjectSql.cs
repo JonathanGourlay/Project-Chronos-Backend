@@ -89,7 +89,8 @@
         public static string GetProject = @"
         -- DECLARE @ProjectId int = 1
         
-        SELECT p.ProjectId,
+         SELECT 
+			   p.ProjectId,
                p.ProjectName,
               
 			  pc.ColumnId as pcCol,
@@ -109,44 +110,51 @@
                time.TotalTime,
 
 			  
-               users.UserId,
-               users.UserName,
-               users.Role,
+               projectUsers.UserId,
+               projectUsers.UserName,
+               projectUsers.Role,
 
 			   ut.TaskId as linkUserTaskId,
 			   ut.UserId as Dauser,
 			   taskUsers.UserId as taskUserId,
                taskUsers.UserName as taskUserName,
                taskUsers.Role as taskRole
-           
-        
+
         INTO #tempTable
         
         FROM   [dbo].[Projects] as p
-				JOIN [dbo].[ProjectColumns] as pc
-                      on pc.ProjectId = @ProjectId
-				JOIN [dbo].[Columns] as col
-                     on col.ColumnId = pc.ColumnId
-				LEFT JOIN [dbo].[ColumnTasks] as ct
+ 
+		LEFT JOIN [dbo].[ProjectColumns] as pc
+                   on pc.ProjectId = @ProjectId
+		LEFT JOIN [dbo].[ProjectUsers] as pu
+                   on pu.ProjectId = @ProjectId
+		LEFT JOIN [dbo].[Users] as projectUsers
+                   on projectUsers.UserId = pu.UserId
+		LEFT JOIN [dbo].[Columns] as col
+                   on col.ColumnId = pc.ColumnId
+		LEFT JOIN [dbo].[ColumnTasks] as ct
                      on ct.ColumnId = col.ColumnId
-                LEFT JOIN [dbo].[Tasks] as task
-                      on ct.TaskId = task.TaskId
-				
-               LEFT JOIN [dbo].[TasksTimeLogs] as ttl
-                      on ttl.TaskId = task.TaskId
-               LEFT JOIN [dbo].[TimeLogs] as time
-                      on time.TimeLogId = ttl.TimeLogId
-               LEFT JOIN [dbo].[ProjectUsers] as pu
-                      on pu.ProjectId = @ProjectId
-               LEFT JOIN [dbo].[UserTasks] as ut
-                      on ut.TaskId = task.TaskId
-               LEFT JOIN [dbo].[Users] as users
-                      on users.UserId = pu.UserId
-			   LEFT JOIN [dbo].[Users] as taskUsers
-                      on users.UserId = ut.UserId
+		LEFT JOIN [dbo].[Tasks] as task
+                     on ct.TaskId = task.TaskId
+		LEFT JOIN [dbo].[UserTasks] as ut
+                     on   task.TaskId = ut.TaskId
+		LEFT JOIN [dbo].[Users] as taskUsers
+                     on taskUsers.UserId = ut.UserId
+		LEFT JOIN [dbo].[TasksTimeLogs] as ttl
+                     on ttl.TaskId = task.TaskId
+		LEFT JOIN [dbo].[TimeLogs] as time
+                      on ttl.TimeLogId=time.TimeLogId
+		
+
+
+
+
         WHERE  p.[ProjectId] = @ProjectId
         ORDER  BY p.[ProjectId] 
-        
+
+		
+  
+		--SELECT DISTINCT * FROM #tempTable where #temptable.ProjectId = @ProjectId
 		SELECT distinct TimeLogId, StartTime, EndTime, TotalTime, linkTimelogTaskId FROM #tempTable
         SELECT distinct UserId, UserName, Role FROM #tempTable
         SELECT distinct taskUserId as UserId, taskUserName as UserName, taskRole as Role, linkUserTaskId FROM #tempTable

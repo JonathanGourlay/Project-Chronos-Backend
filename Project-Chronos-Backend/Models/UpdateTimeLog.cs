@@ -1,14 +1,15 @@
 ﻿using System;
-using Project_Chronos_Backend.BusinessObjects;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Project_Chronos_Backend.Models
 {
-    public class CreateTimeLog
+    public class UpdateTimeLog
     {
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
         public float totalTime { get; set; }
-        public int userId { get; set; }
-        public int taskId { get; set; }
+        public int timelogId { get; set; }
     }
 }
