@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Permissions;
 using System.Threading.Tasks;
 using DAL.DataTransferObjects;
 using Project_Chronos_Backend.Extensions;
@@ -11,6 +12,14 @@ namespace Project_Chronos_Backend.BusinessObjects
     {
         public int ProjectId { get; set; }
         public string ProjectName { get; set; }
+        public DateTime ProjectStartTime { get; set; }
+        public DateTime ProjectEndTime { get; set; }
+        public DateTime ExpectedEndTime { get; set; }
+        public int PointsTotal { get; set; }
+        public int AddedPoints { get; set; }
+        public string ProjectCompleated { get; set; }
+        public string ProjectArchived { get; set; }
+        public int TimeIncrement { get; set; }
         public List<UserObject> Users { get; set; }
         public List<ColumnObject> Columns { get; set; }
 
@@ -21,6 +30,14 @@ namespace Project_Chronos_Backend.BusinessObjects
         {
             ProjectId = dto.ProjectId;
             ProjectName = dto.ProjectName;
+            ProjectStartTime = dto.ProjectStartTime;
+            ProjectEndTime = dto.ProjectEndTime;
+            ExpectedEndTime = dto.ExpectedEndTime;
+            PointsTotal = dto.PointsTotal;
+            AddedPoints = dto.AddedPoints;
+            ProjectCompleated = dto.ProjectCompleated;
+            ProjectArchived = dto.ProjectArchived;
+            TimeIncrement = dto.TimeIncrement;
             Users = dto.Users.Select(u => new UserObject(u)).ToList();
             Columns = dto.Columns.Select(c => new ColumnObject(c)).ToList();
         }
@@ -32,15 +49,26 @@ namespace Project_Chronos_Backend.BusinessObjects
                 Columns = Columns.ToDto(),
                 ProjectName = ProjectName,
                 ProjectId = ProjectId,
-                Users = Users.ToDto(),
+                ProjectStartTime = ProjectStartTime,
+                ProjectEndTime = ProjectEndTime,
+                ExpectedEndTime = ExpectedEndTime,
+                PointsTotal = PointsTotal,
+                AddedPoints = AddedPoints,
+                ProjectCompleated = ProjectCompleated,
+                ProjectArchived = ProjectArchived,
+                TimeIncrement = TimeIncrement,
+            Users = Users.ToDto(),
             };
         }
+
     }
 
     public class ColumnObject
     {
         public int ColumnId { get; set; }
         public string ColumnName { get; set; }
+        public int PointsTotal { get; set; }
+        public int AddedPoints { get; set; }
         public List<TaskObject> Tasks { get; set; }
 
         public ColumnObject() {}
@@ -49,6 +77,8 @@ namespace Project_Chronos_Backend.BusinessObjects
         {
             ColumnId = dto.ColumnId;
             ColumnName = dto.ColumnName;
+            PointsTotal = dto.PointsTotal;
+            AddedPoints = dto.AddedPoints;
             Tasks = dto.Tasks.Select(t => new TaskObject(t)).ToList();
         }
 
@@ -63,11 +93,20 @@ namespace Project_Chronos_Backend.BusinessObjects
         }
     }
 
+    public class LoginObject
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
     public class UserObject
     {
         public int UserId { get; set; }
         public string UserName { get; set; }
         public string Role { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string AccessToken { get; set; }
+        public string Archived { get; set; }
 
         public UserObject() {}
 
@@ -75,6 +114,10 @@ namespace Project_Chronos_Backend.BusinessObjects
         {
             UserId = dto.UserId;
             UserName = dto.UserName;
+            Email = dto.Email;
+            Password = dto.Password;
+            AccessToken = dto.AccessToken;
+            Archived = dto.Archived;
             Role = dto.Role;
         }
 
@@ -85,6 +128,9 @@ namespace Project_Chronos_Backend.BusinessObjects
                 UserId = UserId,
                 UserName = UserName,
                 Role = Role,
+                Email = Email,
+                Password = Password,
+                AccessToken = AccessToken
             };
         }
     }
@@ -93,6 +139,16 @@ namespace Project_Chronos_Backend.BusinessObjects
         public int TaskId { get; set; }
         public string TaskName { get; set; }
         public string Comments { get; set; }
+        public int Points { get; set; }
+        public int AddedPoints { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+        public DateTime ExpectedEndTime { get; set; }
+        public string TaskDone { get; set; }
+        public string TaskDeleted { get; set; }
+        public  string TaskArchived { get; set; }
+        public string ExtensionReason { get; set; }
+        public string AddedReason { get; set; }
         public List<TimeLogObject> Timelogs { get; set; }
         public List<UserObject> Users { get; set; }
 
@@ -103,6 +159,16 @@ namespace Project_Chronos_Backend.BusinessObjects
             TaskId = dto.TaskId;
             TaskName = dto.TaskName;
             Comments = dto.Comments;
+            Points = dto.Points;
+            AddedPoints = dto.AddedPoints;
+            StartTime = dto.StartTime;
+            EndTime = dto.EndTime;
+            ExpectedEndTime = dto.ExpectedEndTime;
+            TaskDone = dto.TaskDone;
+            TaskDeleted = dto.TaskDeleted;
+            TaskArchived = dto.TaskArchived;
+            ExtensionReason = dto.ExtensionReason;
+            AddedReason = dto.AddedReason;
             Timelogs = dto.Timelogs.Select(tl => new TimeLogObject(tl)).ToList();
             Users = dto.Users.Select(me => new UserObject(me)).ToList();
         }
@@ -114,9 +180,19 @@ namespace Project_Chronos_Backend.BusinessObjects
                 TaskId = TaskId,
                 TaskName=  TaskName,
                 Comments = Comments,
-                //Timelogs = Timelogs.ToDto(),
-                //Users = Users.ToDto(),
-            };
+                Points = Points,
+                AddedPoints = AddedPoints,
+                StartTime = StartTime,
+                EndTime = EndTime,
+                ExpectedEndTime = ExpectedEndTime,
+                TaskDone = TaskDone,
+                TaskDeleted = TaskDeleted,
+                TaskArchived = TaskArchived,
+                ExtensionReason = ExtensionReason,
+                AddedReason = AddedReason,
+            //Timelogs = Timelogs.ToDto(),
+            //Users = Users.ToDto(),
+        };
         }
     }
 
@@ -126,6 +202,8 @@ namespace Project_Chronos_Backend.BusinessObjects
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public float TotalTime { get; set; }
+        public string Billable { get; set; }
+        public string Archived { get; set; }
 
         public TimeLogObject()
         {
@@ -138,6 +216,8 @@ namespace Project_Chronos_Backend.BusinessObjects
             StartTime = dto.StartTime;
             EndTime = dto.EndTime;
             TotalTime = dto.TotalTime;
+            Billable = dto.Billable;
+            Archived = dto.Archived;
         }
 
         public TimeLogDto ToDto()
@@ -147,7 +227,9 @@ namespace Project_Chronos_Backend.BusinessObjects
                 StartTime = StartTime,
                 EndTime = EndTime,
                 TimeLogId = TimeLogId,
-                TotalTime = TotalTime
+                TotalTime = TotalTime,
+                Billable = Billable,
+                Archived = Archived,
             };
         }
     }

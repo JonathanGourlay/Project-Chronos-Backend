@@ -74,46 +74,70 @@ namespace DAL.Repository
             return new List<ProjectDto>() { new ProjectDto(projectDto, usersDtos, enumeratedColumnDtos) };
         }
 
-        public int CreateProject(IEnumerable<string> projectName)
+        public int CreateProject(ProjectDto project)
         {
             var result = ExecuteFunc(con =>
-                con.QuerySingleOrDefault<int>(ProjectSql.CreateProject, new {ProjectName = projectName}));
-
+                con.QuerySingleOrDefault<int>(ProjectSql.CreateProject, new {ProjectName = project.ProjectName,  StartTime = project.ProjectStartTime, EndTime = project.ProjectEndTime, ExpectedEndTime = project.ExpectedEndTime, PointsTotal =  project.PointsTotal, AddedPointsTotal = project.AddedPoints, ProjectComplete = project.ProjectCompleated, ProjectArchived = project.ProjectArchived, TimeIncrement = project.TimeIncrement }));
             return result;
         }
-        public int UpdateProject(string projectName, int projectId)
+        public int UpdateProject(string projectName, DateTime startTime, DateTime endTime, DateTime expectedEndTime, int pointsTotal, int addedPoints, string projectComplete, string projectArchived, int timeIncrement, int projectId)
         {
             var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.UpdateProject,
                 new
                 {
-                    ProjectName = projectName,
-                   ProjectId = projectId
+                   ProjectName = projectName,
+                   ProjectStartTime = startTime,
+                   ProjectEndTime = endTime,
+                   ExpectedEndTime = expectedEndTime,
+                   PointsTotal = pointsTotal,
+                   AddedPoints = addedPoints,
+                   ProjectComplete = projectComplete,
+                   ProjectArchived = projectArchived,
+                   TimeIncrement = timeIncrement,
+                   ProjectId = projectId,
                 }));
 
             return result;
 
         }
-        public int CreateColumn(string columnName, int projectId)
+        public IEnumerable<TaskDto> GetUserTasks(int userId)
+        {
+            var result = ExecuteFunc(con => con.Query<TaskDto>(ProjectSql.GetUserstasks,
+                new
+                {
+                    UserId = userId
+                }));
+
+            return result;
+
+        }
+        public int CreateColumn(string columnName, int projectId, int pointsTotal, int addedPointsTotal)
         {
             var dtCol = new DataTable();
             dtCol.Columns.Add("ColumnName");
+            dtCol.Columns.Add("PointsTotal");
+            dtCol.Columns.Add("AddedPointsTotal");
             dtCol.Rows.Add(columnName);
+            dtCol.Rows.Add(pointsTotal);
+            dtCol.Rows.Add(addedPointsTotal);
 
             var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.CreateColumn,
                 new
                 {
-                    ColumnName = columnName, ProjectId = projectId, Columns = dtCol.AsTableValuedParameter("TVP_Column")
+                    ColumnName = columnName,PointsTotal = pointsTotal,AddedPointsTotal = addedPointsTotal, ProjectId = projectId, Columns = dtCol.AsTableValuedParameter("TVP_Column")
                 }));
 
             return result;
         }
-        public int UpdateColumn(string columnName, int columnId)
+        public int UpdateColumn(string columnName, int columnId, int pointsTotal, int addedPointsTotal)
         {
 
             var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.UpdateColumn,
                 new
                 {
                     ColumnName = columnName,
+                    PointsTotal = pointsTotal,
+                    AddedPointsTotal = addedPointsTotal,
                     ColumnId = columnId
                 }));
 
@@ -125,30 +149,61 @@ namespace DAL.Repository
             return 1;
         }
 
-        public int CreateTask(string taskName, string comments, int columnId)
+        public int CreateTask(string taskName, string comments,int pointsTotal, int addedPointsTotal, DateTime startTime, DateTime endTime, DateTime expectedEndTime, string taskDone, string taskDeleted, string taskArchived, string extentionReason, string addedReason, int columnId)
         {
             var dt = new DataTable();
             dt.Columns.Add("Name");
             dt.Columns.Add("Comments");
-            dt.Rows.Add(taskName, comments);
+            dt.Columns.Add("PointsTotal");
+            dt.Columns.Add("AddedPoints");
+            dt.Columns.Add("StartTime");
+            dt.Columns.Add("EndTime");
+            dt.Columns.Add("ExpectedEndTime");
+            dt.Columns.Add("TaskDone");
+            dt.Columns.Add("TaskDeleted");
+            dt.Columns.Add("TaskArchived");
+            dt.Columns.Add("ExtentionReason");
+            dt.Columns.Add("AddedReason");
+            dt.Rows.Add(taskName, comments,pointsTotal,addedPointsTotal,startTime,endTime,expectedEndTime,taskDone,taskDeleted,taskArchived,extentionReason,addedReason);
 
             var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.CreateTask,
                 new
                 {
                     ColumnId = columnId, 
-                    Tasks = dt.AsTableValuedParameter("TVP_Task"), TaskName = taskName,
-                    Comments = comments
+                    Tasks = dt.AsTableValuedParameter("TVP_Task"), 
+                    TaskName = taskName,
+                    Comments = comments,
+                    PointsTotal = pointsTotal,
+                    AddedPointsTotal = addedPointsTotal,
+                    StartTime = startTime,
+                    EndTime = endTime,
+                    ExpectedEndTime = expectedEndTime,
+                    TaskDone = taskDone,
+                    TaskDeleted = taskDeleted,
+                    TaskArchived = taskArchived,
+                    ExtentionReason = extentionReason,
+                    AddedReason = addedReason
                 }));
 
             return result;
         }
-        public int UpdateTask(string taskName, string comments, int taskId)
+        public int UpdateTask(string taskName, string comments, int pointsTotal, int addedPointsTotal, DateTime startTime, DateTime endTime, DateTime expectedEndTime, string taskDone, string taskDeleted, string taskArchived, string extensionReason, string addedReason, int columnId ,int taskId)
         {
             var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.UpdateTask,
                 new
                 {
                     TaskName = taskName,
                     Comments = comments,
+                    PointsTotal = pointsTotal,
+                    AddedPointsTotal = addedPointsTotal,
+                    StartTime = startTime,
+                    EndTime = endTime,
+                    ExpectedEndTime = expectedEndTime,
+                    TaskDone = taskDone,
+                    TaskDeleted = taskDeleted,
+                    TaskArchived = taskArchived,
+                    ExtensionReason = extensionReason,
+                    AddedReason = addedReason,
                     TaskId = taskId
                 }));
 
@@ -161,17 +216,22 @@ namespace DAL.Repository
             return 1;
         }
 
-        public int CreateUser(string userName, string role)
+        public int CreateUser(string userName, string role, string email,string password,string accessToken, string archived)
         {
             var dt = new DataTable();
             dt.Columns.Add("UserName");
             dt.Columns.Add("Role");
-            dt.Rows.Add(userName, role);
+            dt.Columns.Add("Email");
+            dt.Columns.Add("Password");
+            dt.Columns.Add("AccessToken");
+            dt.Columns.Add("Archived");
+
+            dt.Rows.Add(userName, role, email,archived);
             var result = ExecuteFunc(con =>
-                con.QuerySingleOrDefault<int>(ProjectSql.CreateUser, new {UserName = userName, Role = role}));
+                con.QuerySingleOrDefault<int>(ProjectSql.CreateUser, new {UserName = userName, Role = role, Email = email,Password = BCrypt.Net.BCrypt.HashPassword(password), AccessToken = accessToken, Archived = archived}));
             return result;
         }
-        public int UpdateUser(string userName, string role, int userId)
+        public int UpdateUser(string userName, string role,string email,string password,string accessToken,string archived, int userId)
         {
 
             var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.UpdateUser,
@@ -179,6 +239,10 @@ namespace DAL.Repository
                 {
                     UserName = userName,
                     Role = role,
+                    Email = email,
+                    Password = BCrypt.Net.BCrypt.HashPassword(password),
+                    AccessToken = accessToken,
+                    Archived = archived,
                     UserId = userId
                 }));
 
@@ -190,6 +254,24 @@ namespace DAL.Repository
             return 1;
         }
 
+        public UserDto CheckLogin(string email, string password)
+        {
+
+            var result = ExecuteFunc(con => con.QuerySingleOrDefault<UserDto>(ProjectSql.CheckUser,
+                new
+                {
+                    Email = email,
+                }));
+            var  check = BCrypt.Net.BCrypt.Verify(password, result.Password);
+            if (check)
+            {
+                return result;
+            }
+            {
+                return null;
+            }
+           
+        }
         public int SetTaskUser(int taskId, int userId)
         {
             var dt = new DataTable();
@@ -212,20 +294,22 @@ namespace DAL.Repository
             return result;
         }
 
-        public int CreateTimeLog(DateTime startTime, DateTime endTime, float totalTime, int userId, int taskId)
+        public int CreateTimeLog(DateTime startTime, DateTime endTime, float totalTime,string billable,string archived, int userId, int taskId)
         {
             var dt = new DataTable();
             dt.Columns.Add("StartTime", typeof(DateTime));
             dt.Columns.Add("EndTime", typeof(DateTime));
             dt.Columns.Add("TotalTime", typeof(float));
-            dt.Rows.Add(startTime, endTime, totalTime);
+            dt.Columns.Add("Billable");
+            dt.Columns.Add("Archived");
+            dt.Rows.Add(startTime, endTime, totalTime, billable, archived);
 
             var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.CreateTimeLog,
                 new {TimeLogs = dt.AsTableValuedParameter("TVP_TimeLogs"), UserId = userId, TaskId = taskId}));
 
             return result;
         }
-        public int UpdateTimeLog(DateTime startTime, DateTime endTime, float totalTime, int timelogId)
+        public int UpdateTimeLog(DateTime startTime, DateTime endTime, float totalTime,string billable,string archived, int timelogId)
         {
             var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.UpdateTimeLog,
                 new
@@ -233,6 +317,8 @@ namespace DAL.Repository
                     StartTime = startTime,
                     EndTime = endTime,
                     TotalTime = totalTime,
+                    Billable = billable,
+                    Archived = archived,
                     TimeLogId = timelogId
                 }));
 

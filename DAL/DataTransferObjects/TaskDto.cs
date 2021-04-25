@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +10,16 @@ namespace DAL.DataTransferObjects
         public int TaskId { get; set; }
         public string TaskName { get; set; }
         public string Comments { get; set; }
+        public int Points { get; set; }
+        public int AddedPoints { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+        public DateTime ExpectedEndTime { get; set; }
+        public string TaskDone { get; set; }
+        public string TaskDeleted { get; set; }
+        public string TaskArchived { get; set; }
+        public string ExtensionReason { get; set; }
+        public string AddedReason { get; set; }
         public List<TimeLogDto> Timelogs { get; set; }
         public List<UserDto> Users { get; set; }
 
@@ -17,6 +28,16 @@ namespace DAL.DataTransferObjects
             TaskId = dto.TaskId;
             TaskName = dto.TaskName;
             Comments = dto.Comments;
+            Points = dto.Points;
+            AddedPoints = dto.AddedPoints;
+            StartTime = dto.StartTime;
+            EndTime = dto.EndTime;
+            ExpectedEndTime = dto.ExpectedEndTime;
+            TaskDone = dto.TaskDone;
+            TaskDeleted = dto.TaskDeleted;
+            TaskArchived = dto.TaskArchived;
+            ExtensionReason = dto.ExtensionReason;
+            AddedReason = dto.AddedReason;
         }
 
         public TaskDto()

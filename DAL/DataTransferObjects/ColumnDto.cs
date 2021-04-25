@@ -6,14 +6,18 @@ namespace DAL.DataTransferObjects
     {
         public int ColumnId { get; set; }
         public string ColumnName { get; set; }
+        public int PointsTotal { get; set; }
+        public int AddedPoints { get; set; }
         public List<TaskDto> Tasks { get; set; }
 
         public ColumnDto() {}
 
-        public ColumnDto(int columnId, string columnName, List<TaskDto> tasks)
+        public ColumnDto(int columnId, string columnName, int pointsTotal, int addedPoints, List<TaskDto> tasks)
         {
             ColumnId = columnId;
             ColumnName = columnName;
+            PointsTotal = pointsTotal;
+            AddedPoints = addedPoints;
             Tasks = tasks;
         }
 

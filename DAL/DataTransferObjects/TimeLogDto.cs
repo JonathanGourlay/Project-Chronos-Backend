@@ -8,6 +8,8 @@ namespace DAL.DataTransferObjects
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public float TotalTime { get; set; }
+        public string Billable { get; set; }
+        public string Archived { get; set; }
 
         public TimeLogDto(){}
 
@@ -17,6 +19,8 @@ namespace DAL.DataTransferObjects
             StartTime = dto.StartTime;
             EndTime = dto.EndTime;
             TotalTime = dto.TotalTime;
+            Billable = dto.Billable;
+            Archived = dto.Archived;
         }
     }
 }
