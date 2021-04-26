@@ -1,4 +1,4 @@
-﻿namespace DAL.Interfaces
+﻿namespace DLL.Interfaces
 {
     public interface IUserRepo
     {

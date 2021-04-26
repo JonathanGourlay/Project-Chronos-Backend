@@ -1,6 +1,4 @@
-using System;
-
-namespace DAL.DataTransferObjects
+namespace DLL.DataTransferObjects
 {
     public class UserViewDto
     {

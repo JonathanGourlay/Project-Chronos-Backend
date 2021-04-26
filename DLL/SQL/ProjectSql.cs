@@ -1,4 +1,4 @@
-﻿namespace DAL.SQL
+﻿namespace DLL.SQL
 {
     public static class ProjectSql
     {

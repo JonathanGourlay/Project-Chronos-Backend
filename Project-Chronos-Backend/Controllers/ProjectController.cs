@@ -83,7 +83,7 @@ namespace Project_Chronos_Backend.Controllers
 
         [HttpPost]
         [Route("CreateUser")]
-        [ProducesResponseType(typeof(int), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(UserDto), (int) HttpStatusCode.OK)]
         public IActionResult CreateUser([FromBody] CreateUser user)
         {
             return MapToIActionResult(() => _projectRepo.CreateUser(user.userName, user.role, user.email,user.password,user.accessToken,user.archived));

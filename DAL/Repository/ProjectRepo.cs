@@ -6,6 +6,7 @@ using System.Linq;
 using DAL.DataTransferObjects;
 using DAL.Interfaces;
 using DAL.SQL;
+
 using Dapper;
 using Microsoft.Extensions.Options;
 
@@ -216,7 +217,7 @@ namespace DAL.Repository
             return 1;
         }
 
-        public int CreateUser(string userName, string role, string email,string password,string accessToken, string archived)
+        public UserDto CreateUser(string userName, string role, string email,string password,string accessToken, string archived)
         {
             var dt = new DataTable();
             dt.Columns.Add("UserName");
@@ -228,7 +229,7 @@ namespace DAL.Repository
 
             dt.Rows.Add(userName, role, email,archived);
             var result = ExecuteFunc(con =>
-                con.QuerySingleOrDefault<int>(ProjectSql.CreateUser, new {UserName = userName, Role = role, Email = email,Password = BCrypt.Net.BCrypt.HashPassword(password), AccessToken = accessToken, Archived = archived}));
+                con.QuerySingleOrDefault<UserDto>(ProjectSql.CreateUser, new {UserName = userName, Role = role, Email = email,Password = BCrypt.Net.BCrypt.HashPassword(password), AccessToken = accessToken, Archived = archived}));
             return result;
         }
         public int UpdateUser(string userName, string role,string email,string password,string accessToken,string archived, int userId)

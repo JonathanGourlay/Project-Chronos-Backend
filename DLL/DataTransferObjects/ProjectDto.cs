@@ -1,9 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DAL.DataTransferObjects
+namespace DLL.DataTransferObjects
 {
     public class ProjectDto
     {

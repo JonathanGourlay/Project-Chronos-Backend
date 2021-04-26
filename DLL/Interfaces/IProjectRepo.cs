@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using DAL.DataTransferObjects;
+using ProjectDto = DLL.DataTransferObjects.ProjectDto;
+using TaskDto = DLL.DataTransferObjects.TaskDto;
+using UserDto = DLL.DataTransferObjects.UserDto;
 
-namespace DAL.Interfaces
+namespace DLL.Interfaces
 {
     public interface IProjectRepo
     {
@@ -17,7 +20,7 @@ namespace DAL.Interfaces
         int CreateColumn(string columnName, int projectId, int pointsTotal, int addedPointsTotal);
         int CreateTask(string taskName, string comments, int pointsTotal, int addedPointsTotal, DateTime startTime, DateTime endTime, DateTime expectedEndTime, string taskDone, string taskDeleted, string taskArchived, string extentionReason, string addedReason, int columnId);
         int CreateTimeLog(DateTime startTime, DateTime endTime, float totalTime, string billable,string archived, int userId, int taskId);
-        int CreateUser(string userName, string role, string email,string password,string accessToken, string archived);
+        UserDto CreateUser(string userName, string role, string email,string password,string accessToken, string archived);
         int SetTaskUser(int taskId, int userId);
         int SetProjectUser(int projectId, int userId);
 

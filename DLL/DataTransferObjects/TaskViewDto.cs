@@ -1,7 +1,6 @@
 using System;
-using System.Collections.Generic;
 
-namespace DAL.DataTransferObjects
+namespace DLL.DataTransferObjects
 {
     public class TaskViewDto
     {

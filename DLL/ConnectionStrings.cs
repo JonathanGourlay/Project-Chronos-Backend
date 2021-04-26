@@ -1,4 +1,4 @@
-﻿namespace DAL
+﻿namespace DLL
 {
     public class ConnectionStrings
     {
