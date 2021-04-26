@@ -1,5 +1,6 @@
 ﻿using DAL.Interfaces;
 using Microsoft.Extensions.Options;
+using ObjectContracts;
 
 namespace DAL.Repository
 {
