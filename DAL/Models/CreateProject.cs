@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace ObjectContracts.DataTransferObjects
+namespace DAL.Models
 {
-    public class ProjectViewDto
+    public class CreateProject
     {
         public int ProjectId { get; set; }
         public string ProjectName { get; set; }

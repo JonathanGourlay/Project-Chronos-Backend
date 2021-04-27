@@ -15,7 +15,7 @@ namespace BLL.BusinessObjects
         public DateTime ExpectedEndTime { get; set; }
         public int PointsTotal { get; set; }
         public int AddedPoints { get; set; }
-        public string ProjectCompleated { get; set; }
+        public string ProjectComplete { get; set; }
         public string ProjectArchived { get; set; }
         public int TimeIncrement { get; set; }
         public List<UserObject> Users { get; set; }
@@ -33,7 +33,7 @@ namespace BLL.BusinessObjects
             ExpectedEndTime = dto.ExpectedEndTime;
             PointsTotal = dto.PointsTotal;
             AddedPoints = dto.AddedPoints;
-            ProjectCompleated = dto.ProjectCompleated;
+            ProjectComplete = dto.ProjectComplete;
             ProjectArchived = dto.ProjectArchived;
             TimeIncrement = dto.TimeIncrement;
             Users = dto.Users.Select(u => new UserObject(u)).ToList();
@@ -52,7 +52,7 @@ namespace BLL.BusinessObjects
                 ExpectedEndTime = ExpectedEndTime,
                 PointsTotal = PointsTotal,
                 AddedPoints = AddedPoints,
-                ProjectCompleated = ProjectCompleated,
+                ProjectComplete = ProjectComplete,
                 ProjectArchived = ProjectArchived,
                 TimeIncrement = TimeIncrement,
             Users = Users.ToDto(),

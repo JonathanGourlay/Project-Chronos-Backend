@@ -47,7 +47,7 @@ namespace Project_Chronos_Backend.Controllers
         [HttpPost]
         [Route("CreateProject")]
         [ProducesResponseType(typeof(int), (int) HttpStatusCode.OK)]
-        public IActionResult CreateProject([FromBody] ProjectDto project)
+        public IActionResult CreateProject([FromBody] CreateProject project)
         {
             return MapToIActionResult(() => _projectFacade.CreateProject(project));
         }
@@ -57,7 +57,7 @@ namespace Project_Chronos_Backend.Controllers
         [ProducesResponseType(typeof(int), (int) HttpStatusCode.OK)]
         public IActionResult CreateColumn([FromBody] CreateColumn column)
         {
-            return MapToIActionResult(() => _projectFacade.CreateColumn(column.columnName,column.projectId,column.pointsTotal, column.addedPointsTotal));
+            return MapToIActionResult(() => _projectFacade.CreateColumn(column));
         }
 
         [HttpPost]
@@ -65,7 +65,7 @@ namespace Project_Chronos_Backend.Controllers
         [ProducesResponseType(typeof(int), (int) HttpStatusCode.OK)]
         public IActionResult CreateTask([FromBody] CreateTask task)
         {
-            return MapToIActionResult(() => _projectFacade.CreateTask(task.taskName, task.comments,task.PointsTotal, task.AddedPointsTotal, task.StartTime,task.EndTime,task.ExpectedEndTime,task.TaskDone,task.TaskDeleted,task.TaskArchived,task.ExtensionReason,task.AddedReason, task.columnId));
+            return MapToIActionResult(() => _projectFacade.CreateTask(task));
         }
 
         [HttpPost]
@@ -74,8 +74,7 @@ namespace Project_Chronos_Backend.Controllers
         public IActionResult CreateTimeLog([FromBody] CreateTimeLog timelog)
         {
             return MapToIActionResult(() =>
-                _projectFacade.CreateTimeLog(timelog.startTime, timelog.endTime,
-                    timelog.totalTime, timelog.billable,timelog.archived, timelog.userId, timelog.taskId));
+                _projectFacade.CreateTimeLog(timelog));
         }
 
         [HttpPost]
@@ -106,21 +105,21 @@ namespace Project_Chronos_Backend.Controllers
         [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
         public IActionResult UpdateProject([FromBody] UpdateProject project)
         {
-            return MapToIActionResult(() => _projectFacade.UpdateProject(project.projectName,project.ProjectStartTime, project.ProjectEndTime,project.ExpectedEndTime,project.PointsTotal,project.AddedPoints,project.ProjectComplete,project.ProjectArchived,project.TimeIncrement, project.projectId));
+            return MapToIActionResult(() => _projectFacade.UpdateProject(project));
         }
         [HttpPost]
         [Route("UpdateColumn")]
         [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
         public IActionResult UpdateColumn([FromBody] UpdateColumn column)
         {
-            return MapToIActionResult(() => _projectFacade.UpdateColumn(column.columnName, column.columnId, column.pointsTotal, column.addedPointsTotal));
+            return MapToIActionResult(() => _projectFacade.UpdateColumn(column));
         }
         [HttpPost]
         [Route("UpdateTask")]
         [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
         public IActionResult UpdateTask([FromBody] UpdateTask task)
         {
-            return MapToIActionResult(() => _projectFacade.UpdateTask(task.taskName,task.comments,task.PointsTotal,task.AddedPoints,task.StartTime,task.EndTime,task.ExpectedEndTime,task.TaskDone,task.TaskDeleted,task.TaskArchived,task.ExtensionReason,task.AddedReason,task.columnId,task.taskId));
+            return MapToIActionResult(() => _projectFacade.UpdateTask(task));
         }
         [HttpPost]
         [Route("UpdateTimeLog")]
@@ -128,7 +127,7 @@ namespace Project_Chronos_Backend.Controllers
         public IActionResult UpdateTimeLog([FromBody]UpdateTimeLog timelog)
         {
            
-            return MapToIActionResult(() => _projectFacade.UpdateTimeLog( timelog.startTime, timelog.endTime, timelog.totalTime,timelog.billable,timelog.archived, timelog.timelogId));
+            return MapToIActionResult(() => _projectFacade.UpdateTimeLog(timelog));
         }
         [HttpPut]
         [Route("UpdateUser")]
@@ -136,7 +135,7 @@ namespace Project_Chronos_Backend.Controllers
         public IActionResult UpdateUser([FromBody] UpdateUser user)
         {
 
-            return MapToIActionResult(() => _projectFacade.UpdateUser(user.userName, user.role,user.email,user.password,user.accessToken,user.archived, user.userId));
+            return MapToIActionResult(() => _projectFacade.UpdateUser(user));
         }
 
     }

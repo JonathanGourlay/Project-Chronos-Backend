@@ -71,7 +71,7 @@ namespace DAL.Repository
             return new List<ProjectDto> {new ProjectDto(projectDto, usersDtos, enumeratedColumnDtos)};
         }
 
-        public int CreateProject(ProjectDto project)
+        public int CreateProject(CreateProject project)
         {
             var result = ExecuteFunc(con =>
                 con.QuerySingleOrDefault<int>(ProjectSql.CreateProject, new
@@ -79,30 +79,28 @@ namespace DAL.Repository
                     project.ProjectName, StartTime = project.ProjectStartTime, EndTime = project.ProjectEndTime,
                     project.ExpectedEndTime,
                     project.PointsTotal, AddedPointsTotal = project.AddedPoints,
-                    ProjectComplete = project.ProjectCompleated,
+                    ProjectComplete = project.ProjectComplete,
                     project.ProjectArchived,
                     project.TimeIncrement
                 }));
             return result;
         }
 
-        public int UpdateProject(string projectName, DateTime startTime, DateTime endTime, DateTime expectedEndTime,
-            int pointsTotal, int addedPoints, string projectComplete, string projectArchived, int timeIncrement,
-            int projectId)
+        public int UpdateProject(UpdateProject project)
         {
             var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.UpdateProject,
                 new
                 {
-                    ProjectName = projectName,
-                    ProjectStartTime = startTime,
-                    ProjectEndTime = endTime,
-                    ExpectedEndTime = expectedEndTime,
-                    PointsTotal = pointsTotal,
-                    AddedPoints = addedPoints,
-                    ProjectComplete = projectComplete,
-                    ProjectArchived = projectArchived,
-                    TimeIncrement = timeIncrement,
-                    ProjectId = projectId
+                    ProjectName = project.projectName,
+                    ProjectStartTime = project.ProjectStartTime,
+                    ProjectEndTime = project.ProjectEndTime,
+                    ExpectedEndTime = project.ExpectedEndTime,
+                    PointsTotal = project.PointsTotal,
+                    AddedPoints = project.AddedPoints,
+                    ProjectComplete = project.ProjectComplete,
+                    ProjectArchived = project.ProjectArchived,
+                    TimeIncrement = project.TimeIncrement,
+                    ProjectId = project.projectId
                 }));
 
             return result;
@@ -119,102 +117,82 @@ namespace DAL.Repository
             return result;
         }
 
-        public int CreateColumn(string columnName, int projectId, int pointsTotal, int addedPointsTotal)
+        public int CreateColumn(CreateColumn create)
         {
             var dtCol = new DataTable();
             dtCol.Columns.Add("ColumnName");
             dtCol.Columns.Add("PointsTotal");
             dtCol.Columns.Add("AddedPointsTotal");
-            dtCol.Rows.Add(columnName);
-            dtCol.Rows.Add(pointsTotal);
-            dtCol.Rows.Add(addedPointsTotal);
+            dtCol.Rows.Add(create.columnName);
+            dtCol.Rows.Add(create.pointsTotal);
+            dtCol.Rows.Add(create.addedPointsTotal);
 
             var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.CreateColumn,
                 new
                 {
-                    ColumnName = columnName, PointsTotal = pointsTotal, AddedPointsTotal = addedPointsTotal,
-                    ProjectId = projectId, Columns = dtCol.AsTableValuedParameter("TVP_Column")
+                    ColumnName = create.columnName, PointsTotal = create.pointsTotal, AddedPointsTotal = create.addedPointsTotal,
+                    ProjectId = create.projectId, Columns = dtCol.AsTableValuedParameter("TVP_Column")
                 }));
 
             return result;
         }
 
-        public int UpdateColumn(string columnName, int columnId, int pointsTotal, int addedPointsTotal)
+        public int UpdateColumn(UpdateColumn column)
         {
             var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.UpdateColumn,
                 new
                 {
-                    ColumnName = columnName,
-                    PointsTotal = pointsTotal,
-                    AddedPointsTotal = addedPointsTotal,
-                    ColumnId = columnId
+                    ColumnName = column.columnName,
+                    PointsTotal = column.pointsTotal,
+                    AddedPointsTotal = column.addedPointsTotal,
+                    ColumnId = column.columnId
                 }));
 
             return result;
         }
 
-        public int CreateTask(string taskName, string comments, int pointsTotal, int addedPointsTotal,
-            DateTime startTime, DateTime endTime, DateTime expectedEndTime, string taskDone, string taskDeleted,
-            string taskArchived, string extentionReason, string addedReason, int columnId)
+        public int CreateTask(CreateTask create)
         {
-            var dt = new DataTable();
-            dt.Columns.Add("Name");
-            dt.Columns.Add("Comments");
-            dt.Columns.Add("PointsTotal");
-            dt.Columns.Add("AddedPoints");
-            dt.Columns.Add("StartTime");
-            dt.Columns.Add("EndTime");
-            dt.Columns.Add("ExpectedEndTime");
-            dt.Columns.Add("TaskDone");
-            dt.Columns.Add("TaskDeleted");
-            dt.Columns.Add("TaskArchived");
-            dt.Columns.Add("ExtentionReason");
-            dt.Columns.Add("AddedReason");
-            dt.Rows.Add(taskName, comments, pointsTotal, addedPointsTotal, startTime, endTime, expectedEndTime,
-                taskDone, taskDeleted, taskArchived, extentionReason, addedReason);
-
+            
             var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.CreateTask,
                 new
                 {
-                    ColumnId = columnId,
-                    Tasks = dt.AsTableValuedParameter("TVP_Task"),
-                    TaskName = taskName,
-                    Comments = comments,
-                    PointsTotal = pointsTotal,
-                    AddedPointsTotal = addedPointsTotal,
-                    StartTime = startTime,
-                    EndTime = endTime,
-                    ExpectedEndTime = expectedEndTime,
-                    TaskDone = taskDone,
-                    TaskDeleted = taskDeleted,
-                    TaskArchived = taskArchived,
-                    ExtentionReason = extentionReason,
-                    AddedReason = addedReason
+                    ColumnId = create.columnId,
+                    TaskName = create.taskName,
+                    Comments = create.comments,
+                    PointsTotal = create.PointsTotal,
+                    AddedPointsTotal = create.AddedPointsTotal,
+                    StartTime = create.StartTime,
+                    EndTime = create.EndTime,
+                    ExpectedEndTime = create.ExpectedEndTime,
+                    TaskDone = create.TaskDone,
+                    TaskDeleted = create.TaskDeleted,
+                    TaskArchived = create.TaskArchived,
+                    ExtensionReason = create.ExtensionReason,
+                    AddedReason = create.AddedReason
                 }));
 
             return result;
         }
 
-        public int UpdateTask(string taskName, string comments, int pointsTotal, int addedPointsTotal,
-            DateTime startTime, DateTime endTime, DateTime expectedEndTime, string taskDone, string taskDeleted,
-            string taskArchived, string extensionReason, string addedReason, int columnId, int taskId)
+        public int UpdateTask(UpdateTask task)
         {
             var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.UpdateTask,
                 new
                 {
-                    TaskName = taskName,
-                    Comments = comments,
-                    PointsTotal = pointsTotal,
-                    AddedPointsTotal = addedPointsTotal,
-                    StartTime = startTime,
-                    EndTime = endTime,
-                    ExpectedEndTime = expectedEndTime,
-                    TaskDone = taskDone,
-                    TaskDeleted = taskDeleted,
-                    TaskArchived = taskArchived,
-                    ExtensionReason = extensionReason,
-                    AddedReason = addedReason,
-                    TaskId = taskId
+                    TaskName = task.taskName,
+                    Comments = task.comments,
+                    PointsTotal = task.PointsTotal,
+                    AddedPointsTotal = task.AddedPoints,
+                    StartTime = task.StartTime,
+                    EndTime = task.EndTime,
+                    ExpectedEndTime = task.ExpectedEndTime,
+                    TaskDone = task.TaskDone,
+                    TaskDeleted = task.TaskDeleted,
+                    TaskArchived = task.TaskArchived,
+                    ExtensionReason = task.ExtensionReason,
+                    AddedReason = task.AddedReason,
+                    TaskId = task.taskId
                 }));
 
             return result;
@@ -233,19 +211,18 @@ namespace DAL.Repository
             return result;
         }
 
-        public int UpdateUser(string userName, string role, string email, string password, string accessToken,
-            string archived, int userId)
+        public int UpdateUser(UpdateUser user)
         {
             var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.UpdateUser,
                 new
                 {
-                    UserName = userName,
-                    Role = role,
-                    Email = email,
-                    Password = BCrypt.Net.BCrypt.HashPassword(password),
-                    AccessToken = accessToken,
-                    Archived = archived,
-                    UserId = userId
+                    UserName = user.userName,
+                    Role = user.role,
+                    Email = user.email,
+                    Password = BCrypt.Net.BCrypt.HashPassword(user.password),
+                    AccessToken = user.accessToken,
+                    Archived = user.archived,
+                    UserId = user.userId
                 }));
 
             return result;
@@ -287,8 +264,7 @@ namespace DAL.Repository
             return result;
         }
 
-        public int CreateTimeLog(DateTime startTime, DateTime endTime, float totalTime, string billable,
-            string archived, int userId, int taskId)
+        public int CreateTimeLog(CreateTimeLog timelog)
         {
             var dt = new DataTable();
             dt.Columns.Add("StartTime", typeof(DateTime));
@@ -296,26 +272,25 @@ namespace DAL.Repository
             dt.Columns.Add("TotalTime", typeof(float));
             dt.Columns.Add("Billable");
             dt.Columns.Add("Archived");
-            dt.Rows.Add(startTime, endTime, totalTime, billable, archived);
+            dt.Rows.Add(timelog.startTime, timelog.endTime, timelog.totalTime, timelog.billable, timelog.archived);
 
             var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.CreateTimeLog,
-                new {TimeLogs = dt.AsTableValuedParameter("TVP_TimeLogs"), UserId = userId, TaskId = taskId}));
+                new {TimeLogs = dt.AsTableValuedParameter("TVP_TimeLogs"), UserId = timelog.userId, TaskId = timelog.taskId }));
 
             return result;
         }
 
-        public int UpdateTimeLog(DateTime startTime, DateTime endTime, float totalTime, string billable,
-            string archived, int timelogId)
+        public int UpdateTimeLog(UpdateTimeLog timelog)
         {
             var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.UpdateTimeLog,
                 new
                 {
-                    StartTime = startTime,
-                    EndTime = endTime,
-                    TotalTime = totalTime,
-                    Billable = billable,
-                    Archived = archived,
-                    TimeLogId = timelogId
+                    StartTime = timelog.startTime,
+                    EndTime = timelog.endTime,
+                    TotalTime = timelog.totalTime,
+                    Billable = timelog.billable,
+                    Archived = timelog.archived,
+                    TimeLogId = timelog.timelogId
                 }));
 
             return result;

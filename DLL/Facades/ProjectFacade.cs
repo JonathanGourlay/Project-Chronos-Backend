@@ -39,33 +39,30 @@ namespace BLL.Facades
             return _projectRepo.CheckLogin(email, password);
         }
 
-        public int CreateProject(ProjectDto project)
+        public int CreateProject(CreateProject project)
         {
             return _projectRepo.CreateProject(project);
         }
 
-        public int CreateColumn(string columnName, int projectId, int pointsTotal, int addedPointsTotal)
+        public int CreateColumn(CreateColumn column)
         {
-            throw new NotImplementedException();
+            return _projectRepo.CreateColumn(column);
         }
 
-        public int CreateTask(string taskName, string comments, int pointsTotal, int addedPointsTotal, DateTime startTime,
-            DateTime endTime, DateTime expectedEndTime, string taskDone, string taskDeleted, string taskArchived,
-            string extentionReason, string addedReason, int columnId)
+        public int CreateTask(CreateTask task)
         {
-            throw new NotImplementedException();
+            return _projectRepo.CreateTask(task);
         }
 
-        public int CreateTimeLog(DateTime startTime, DateTime endTime, float totalTime, string billable, string archived, int userId,
-            int taskId)
+        public int CreateTimeLog(CreateTimeLog timelog)
         {
-            throw new NotImplementedException();
+            return _projectRepo.CreateTimeLog(timelog);
         }
 
-        public UserDto CreateUser(CreateUser createUserRequest)
+        public UserDto CreateUser(CreateUser user)
         {
 
-            return _projectRepo.CreateUser(createUserRequest);
+            return _projectRepo.CreateUser(user);
         }
 
         public int SetTaskUser(int taskId, int userId)
@@ -75,37 +72,33 @@ namespace BLL.Facades
 
         public int SetProjectUser(int projectId, int userId)
         {
-            throw new NotImplementedException();
+            return _projectRepo.SetProjectUser(projectId, userId);
         }
 
-        public int UpdateProject(string projectName, DateTime startTime, DateTime endTime, DateTime expecteDateTime, int pointsTotal,
-            int addedPoints, string projectComplete, string projectArchived, int timeIncrement, int projectId)
+        public int UpdateProject(UpdateProject project)
         {
-            throw new NotImplementedException();
+
+            return _projectRepo.UpdateProject(project);
         }
 
-        public int UpdateColumn(string columnName, int columnId, int pointsTotal, int addedPointsTotal)
+        public int UpdateColumn(UpdateColumn column)
         {
-            throw new NotImplementedException();
+            return _projectRepo.UpdateColumn(column);
         }
 
-        public int UpdateTask(string taskName, string comments, int pointsTotal, int addedPointsTotal, DateTime startTime,
-            DateTime endTime, DateTime expectedEndTime, string taskDone, string taskDeleted, string taskArchived,
-            string extentionReason, string addedReason, int columnId, int taskId)
+        public int UpdateTask(UpdateTask task)
         {
-            throw new NotImplementedException();
+            return _projectRepo.UpdateTask(task);
         }
 
-        public int UpdateTimeLog(DateTime startTime, DateTime endTime, float totalTime, string billable, string archived,
-            int timeLogId)
+        public int UpdateTimeLog(UpdateTimeLog timelog)
         {
-            throw new NotImplementedException();
+            return _projectRepo.UpdateTimeLog(timelog);
         }
 
-        public int UpdateUser(string userName, string role, string email, string password, string accessToken, string archived,
-            int UserId)
+        public int UpdateUser(UpdateUser user)
         {
-            throw new NotImplementedException();
+            return _projectRepo.UpdateUser(user);
         }
     }
 }

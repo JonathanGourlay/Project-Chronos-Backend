@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Octokit;
@@ -20,10 +21,31 @@ namespace GIL
             _client.Connection.Credentials = new Credentials(token);
             return UnwapTask(() => _client.User.Current());
         }
-        public IEnumerable<Repository> GetRepos(string token)
+        public IEnumerable<Project> GetProjects(string token)
         {
             _client.Connection.Credentials = new Credentials(token);
-            return UnwapTask(() => _client.Repository.GetAllForCurrent());
+            var user = _client.User.Current().Result;
+            var repos = _client.Repository.GetAllForCurrent().Result;
+            var projects = new List<Project>();
+            foreach (var repo in repos)
+            {
+               // if (repo.Name == "Project-Chronos-Backend")
+               // {
+                    var projectList = UnwapTask(() =>
+                        _client.Repository.Project.GetAllForRepository(_client.User.Current().Result.Login, repo.Name));
+                    
+                    if (projectList.Count > 0)
+                    {
+                        foreach (var project in projectList)
+                        {
+                            projects.Add(project);
+                        } ;
+                    }
+               // }
+            }
+
+            return projects;
+
         }
         private T UnwapTask<T>(Func<Task<T>> getData)
         {
@@ -35,7 +57,7 @@ namespace GIL
 
     public interface IGit
     {
-        IEnumerable<Repository> GetRepos(string token);
+        IEnumerable<Project> GetProjects(string token);
         User GetUser(string token);
     }
 }
