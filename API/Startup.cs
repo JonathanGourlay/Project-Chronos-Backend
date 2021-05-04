@@ -5,6 +5,7 @@ using BLL.Interfaces;
 using DAL.Interfaces;
 using DAL.Repository;
 using GIL;
+using TIL;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -44,7 +45,7 @@ namespace Project_Chronos_Backend
 
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "AD API",
+                    Title = "Diss API",
                     Version = "1.0",
                     Description =
                         "An api for my Diss.",
@@ -66,7 +67,7 @@ namespace Project_Chronos_Backend
         public static void ScanForAllRemainingRegistrations(IServiceCollection services)
         {
             services.Scan(scan => scan
-                .FromAssembliesOf(typeof(Startup), typeof(ProjectFacade), typeof(BaseRepository), typeof(Git))
+                .FromAssembliesOf(typeof(Startup), typeof(ProjectFacade), typeof(BaseRepository), typeof(Git), typeof(Trello))
                 .AddClasses(x => x.WithoutAttribute(typeof(GeneratedCodeAttribute)))
                 .UsingRegistrationStrategy(RegistrationStrategy.Skip)
                 .AsImplementedInterfaces()

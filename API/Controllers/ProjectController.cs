@@ -23,7 +23,7 @@ namespace Project_Chronos_Backend.Controllers
         }
 
         [HttpPost]
-        [Route("GetProject")]
+        [Route("GetRepoProjects")]
         [ProducesResponseType(typeof(List<ProjectObject>), 200)]
         public IActionResult GetProject([FromBody] int projectId)
         {

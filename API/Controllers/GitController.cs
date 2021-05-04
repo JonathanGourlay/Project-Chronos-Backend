@@ -22,13 +22,20 @@ namespace Project_Chronos_Backend.Controllers
             _logger = logger;
             _gitFacade = gitFacade;
         }
+        [HttpPost]
+        [Route("GetRepos")]
+        [ProducesResponseType(typeof(List<Project>), 200)]
+        public IActionResult GetRepos([FromBody] string token)
+        {
+            return MapToIActionResult(() => _gitFacade.GetRepositories(token));
+        }
 
         [HttpPost]
-        [Route("GetProject")]
+        [Route("GetRepoProjects")]
         [ProducesResponseType(typeof(List<Project>), 200)]
-        public IActionResult GetProject([FromBody] string token)
+        public IActionResult GetRepoProjects([FromBody] string token, long repoId)
         {
-            return MapToIActionResult(() => _gitFacade.GetProjects(token));
+            return MapToIActionResult(() => _gitFacade.GetRepoProjects(token, repoId));
         }
         [HttpPost]
         [Route("GetUser")]
@@ -37,7 +44,14 @@ namespace Project_Chronos_Backend.Controllers
         {
             return MapToIActionResult(() => _gitFacade.GetUser(token));
         }
-        
+        [HttpPost]
+        [Route("GetRepoUser")]
+        [ProducesResponseType(typeof(User), 200)]
+        public IActionResult GetRepoUsers([FromBody] string token, long repoId)
+        {
+            return MapToIActionResult(() => _gitFacade.GetRepoUsers(token,repoId));
+        }
+
 
     }
 }

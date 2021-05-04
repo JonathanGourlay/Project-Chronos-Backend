@@ -80,15 +80,14 @@ namespace BLL.BusinessObjects
             Tasks = dto.Tasks.Select(t => new TaskObject(t)).ToList();
         }
 
-        public ColumnDto ToDto()
+        public ColumnDto ToDto() => new ColumnDto()
         {
-            return new ColumnDto()
-            {
-                ColumnId = ColumnId,
-                ColumnName = ColumnName,
-                Tasks = Tasks.ToDto(),
-            };
-        }
+            ColumnId = ColumnId,
+            ColumnName = ColumnName,
+            PointsTotal = PointsTotal,
+            AddedPoints = AddedPoints,
+            Tasks = Tasks.ToDto(),
+        };
     }
 
     public class LoginObject

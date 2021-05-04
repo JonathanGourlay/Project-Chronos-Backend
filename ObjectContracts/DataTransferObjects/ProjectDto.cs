@@ -17,9 +17,19 @@ namespace ObjectContracts.DataTransferObjects
         public string ProjectArchived { get; set; }
         public int TimeIncrement { get; set; }
         public List<UserDto> Users { get; set; }
-        public List<ColumnDto> Columns { get; set; }
+        public IEnumerable<ColumnDto> Columns { get; set; }
 
-        public ProjectDto() {}
+        public ProjectDto()
+        {
+            ProjectName = new string(ProjectName);
+            ProjectId = new int();
+            Columns = new List<ColumnDto>();
+            AddedPoints = new int();
+            ExpectedEndTime = new DateTime();
+            PointsTotal = new int();
+            ProjectStartTime = new DateTime();
+            ProjectArchived = new string(ProjectArchived);
+        }
 
         public ProjectDto(ProjectViewDto viewDto, IEnumerable<UserDto> users, IEnumerable<ColumnDto> columnDtos)
         {

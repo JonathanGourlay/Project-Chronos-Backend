@@ -8,7 +8,7 @@ namespace BLL.Interfaces
 {
     public interface IProjectFacade
     {
-        //IEnumerable<ProjectTaskDto> GetProjects(IEnumerable<int> projectId);
+        //IEnumerable<ProjectTaskDto> GetRepoProjects(IEnumerable<int> projectId);
         IEnumerable<ProjectDto> GetProject(int projectId);
         IEnumerable<TaskDto> GetUserTasks(int userId);
         UserDto CheckLogin(string email, string password);

@@ -16,48 +16,68 @@ namespace GIL
             _client = new GitHubClient(new ProductHeaderValue("Project-Chronos"));
         }
 
+        public IEnumerable<Repository> GetRepositories(string token)
+        {
+            _client.Connection.Credentials = new Credentials(token);
+            return UnwapTask(() => _client.Repository.GetAllForCurrent());
+        }
+
         public User GetUser(string token)
         {
             _client.Connection.Credentials = new Credentials(token);
             return UnwapTask(() => _client.User.Current());
         }
-        public IEnumerable<Project> GetProjects(string token)
+
+        public IEnumerable<User> GetRepoUsers(string token, long repoId)
         {
             _client.Connection.Credentials = new Credentials(token);
-            var user = _client.User.Current().Result;
-            var repos = _client.Repository.GetAllForCurrent().Result;
-            var projects = new List<Project>();
-            foreach (var repo in repos)
-            {
-               // if (repo.Name == "Project-Chronos-Backend")
-               // {
-                    var projectList = UnwapTask(() =>
-                        _client.Repository.Project.GetAllForRepository(_client.User.Current().Result.Login, repo.Name));
-                    
-                    if (projectList.Count > 0)
-                    {
-                        foreach (var project in projectList)
-                        {
-                            projects.Add(project);
-                        } ;
-                    }
-               // }
-            }
-
-            return projects;
-
+            return UnwapTask(() => _client.Repository.Collaborator.GetAll(repoId));
         }
-        private T UnwapTask<T>(Func<Task<T>> getData)
+        public IEnumerable<Project> GetProject(string token, long repoId)
+        {
+            _client.Connection.Credentials = new Credentials(token);
+            return UnwapTask(() => _client.Repository.Project.GetAllForRepository(repoId)); 
+        }
+
+        public IEnumerable<ProjectColumn> GetColumns(string token, int projectId)
+        {
+            _client.Connection.Credentials = new Credentials(token);
+            return UnwapTask(() => _client.Repository.Project.Column.GetAll(projectId));
+        }
+        public IEnumerable<ProjectCard> GetCards(string token, int columnId)
+        {
+            _client.Connection.Credentials = new Credentials(token);
+            return UnwapTask(() => _client.Repository.Project.Card.GetAll(columnId));
+        }
+
+        public IEnumerable<Issue> GetIssues(string token,long repoId )
+        {
+            _client.Connection.Credentials = new Credentials(token);
+            return UnwapTask(() => _client.Issue.GetAllForRepository(repoId));
+        }
+        public T UnwapTask<T>(Func<Task<T>> getData)
         {
             var resultTask = getData.Invoke();
+
             resultTask.Wait();
+
+            if (resultTask.IsFaulted && resultTask.Exception != null)
+            {
+                throw resultTask.Exception;
+            }
+
             return resultTask.Result;
         }
     }
 
     public interface IGit
     {
-        IEnumerable<Project> GetProjects(string token);
+        IEnumerable<ProjectColumn> GetColumns(string token, int projectId);
+        IEnumerable<ProjectCard> GetCards(string token, int columnId);
+        IEnumerable<Issue> GetIssues(string token, long repoId);
+        IEnumerable<Project> GetProject(string token, long repoId);
+        IEnumerable<Repository> GetRepositories(string token);
         User GetUser(string token);
+        IEnumerable<User> GetRepoUsers(string token, long repoId);
     }
 }

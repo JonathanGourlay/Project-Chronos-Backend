@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ObjectContracts.DataTransferObjects
 {
@@ -18,8 +19,8 @@ namespace ObjectContracts.DataTransferObjects
         public string TaskArchived { get; set; }
         public string ExtensionReason { get; set; }
         public string AddedReason { get; set; }
-        public List<TimeLogDto> Timelogs { get; set; }
-        public List<UserDto> Users { get; set; }
+        public IEnumerable<TimeLogDto> Timelogs { get; set; }
+        public IEnumerable<UserDto> Users { get; set; }
 
         public TaskDto(TaskViewDto dto)
         {
@@ -52,7 +53,7 @@ namespace ObjectContracts.DataTransferObjects
                 Timelogs = new List<TimeLogDto>();
             }
 
-            Timelogs.Add(timelog);
+            Timelogs.ToList().Add(timelog);
         }
 
         public void AddTimelog(IEnumerable<TimeLogDto> timelogs)
@@ -62,7 +63,7 @@ namespace ObjectContracts.DataTransferObjects
                 Timelogs = new List<TimeLogDto>();
             }
             
-            Timelogs.AddRange(timelogs);
+            Timelogs.ToList().AddRange(timelogs);
         }
         public void AddUser(UserDto user)
         {
@@ -72,7 +73,7 @@ namespace ObjectContracts.DataTransferObjects
                 Users = new List<UserDto>();
             }
 
-            Users.Add(user);
+            Users.ToList().Add(user);
         }
 
         public void AddUser(IEnumerable<UserDto> users)
@@ -82,7 +83,7 @@ namespace ObjectContracts.DataTransferObjects
                 Users = new List<UserDto>();
             }
 
-            Users.AddRange(users);
+            Users.ToList().AddRange(users);
         }
     }
 }

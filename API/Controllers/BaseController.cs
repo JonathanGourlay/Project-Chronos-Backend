@@ -12,6 +12,10 @@ namespace Project_Chronos_Backend.Controllers
             try
             {
                 var result = getData.Invoke();
+                if (result == null)
+                {
+                    return Ok(default(T));
+                }
                 return Ok(result);
             }
             catch (Exception ex)

@@ -10,7 +10,12 @@ namespace ObjectContracts.DataTransferObjects
         public string AccessToken { get; set; }
         public string Archived { get; set; }
 
-        public UserDto() {}
+        public UserDto()
+        {
+            UserName = new string(UserName);
+            Role = new string(Role);
+            Archived = new string(Archived);
+        }
 
         public UserDto(UserViewDto dto)
 
