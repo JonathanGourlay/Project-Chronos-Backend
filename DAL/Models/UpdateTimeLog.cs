@@ -10,5 +10,6 @@ namespace DAL.Models
         public string billable { get; set; }
         public string archived { get; set; }
         public int timelogId { get; set; }
+        public int userId { get; set; }
     }
 }

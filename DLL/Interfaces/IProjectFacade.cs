@@ -10,6 +10,7 @@ namespace BLL.Interfaces
     {
         //IEnumerable<ProjectTaskDto> GetRepoProjects(IEnumerable<int> projectId);
         IEnumerable<ProjectDto> GetProject(int projectId);
+        IEnumerable<ProjectDto> GetUserProjects(int userId);
         IEnumerable<TaskDto> GetUserTasks(int userId);
         UserDto CheckLogin(string email, string password);
 
@@ -23,10 +24,11 @@ namespace BLL.Interfaces
         int SetTaskUser(int taskId, int userId);
         int SetProjectUser(int projectId, int userId);
 
-        int UpdateProject(UpdateProject project);
+        int UpdateProject(ProjectViewDto project);
         int UpdateColumn(UpdateColumn column);
         int UpdateTask(UpdateTask task);
         int UpdateTimeLog(UpdateTimeLog timelog);
         int UpdateUser(UpdateUser user);
+        int SetColumnTask(int columndId, int taskId);
     }
 }

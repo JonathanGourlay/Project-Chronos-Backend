@@ -1,13 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace ObjectContracts.DataTransferObjects
 {
-    public class ProjectDto
+   
+    public class ProjectDto 
     {
         public int ProjectId { get; set; }
+        [Required]
+        public string TrelloProjectId { get; set; }
+        [Required]
         public string ProjectName { get; set; }
+        [Required]
         public DateTime ProjectStartTime { get; set; }
         public DateTime ProjectEndTime { get; set; }
         public DateTime ExpectedEndTime { get; set; }
@@ -16,21 +22,14 @@ namespace ObjectContracts.DataTransferObjects
         public string ProjectComplete { get; set; }
         public string ProjectArchived { get; set; }
         public int TimeIncrement { get; set; }
-        public List<UserDto> Users { get; set; }
+        public IEnumerable<UserDto> Users { get; set; }
         public IEnumerable<ColumnDto> Columns { get; set; }
+
 
         public ProjectDto()
         {
-            ProjectName = new string(ProjectName);
-            ProjectId = new int();
-            Columns = new List<ColumnDto>();
-            AddedPoints = new int();
-            ExpectedEndTime = new DateTime();
-            PointsTotal = new int();
-            ProjectStartTime = new DateTime();
-            ProjectArchived = new string(ProjectArchived);
-        }
 
+        }
         public ProjectDto(ProjectViewDto viewDto, IEnumerable<UserDto> users, IEnumerable<ColumnDto> columnDtos)
         {
             ProjectId = viewDto.ProjectId;

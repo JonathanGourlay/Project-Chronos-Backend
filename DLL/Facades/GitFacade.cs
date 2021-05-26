@@ -59,8 +59,8 @@ namespace BLL.Facades
                 //    {
                 //        TaskName = issue.Title,
                 //        Comments = JsonSerializer.Serialize(issue),
-                //        StartTime = issue.CreatedAt.DateTime,
-                //        EndTime = issue.ClosedAt.HasValue ? issue.ClosedAt.Value.DateTime : new DateTime()
+                //        TaskStartTime = issue.CreatedAt.DateTime,
+                //        TaskEndTime = issue.ClosedAt.HasValue ? issue.ClosedAt.Value.DateTime : new DateTime()
                 //    });
                 //}
 

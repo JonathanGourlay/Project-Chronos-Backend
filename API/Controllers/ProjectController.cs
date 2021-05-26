@@ -30,6 +30,13 @@ namespace Project_Chronos_Backend.Controllers
             return MapToIActionResult(() => _projectFacade.GetProject(projectId));
         }
         [HttpPost]
+        [Route("GetUserProjects")]
+        [ProducesResponseType(typeof(List<ProjectDto>), 200)]
+        public IActionResult GetUserProjects([FromBody] int userId)
+        {
+            return MapToIActionResult(() => _projectFacade.GetUserProjects(userId));
+        }
+        [HttpPost]
         [Route("GetUserTasks")]
         [ProducesResponseType(typeof(List<TaskObject>), 200)]
         public IActionResult GetUserTasks([FromBody] int userId)
@@ -103,7 +110,7 @@ namespace Project_Chronos_Backend.Controllers
         [HttpPost]
         [Route("UpdateProject")]
         [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
-        public IActionResult UpdateProject([FromBody] UpdateProject project)
+        public IActionResult UpdateProject([FromBody] ProjectViewDto project)
         {
             return MapToIActionResult(() => _projectFacade.UpdateProject(project));
         }
@@ -120,6 +127,13 @@ namespace Project_Chronos_Backend.Controllers
         public IActionResult UpdateTask([FromBody] UpdateTask task)
         {
             return MapToIActionResult(() => _projectFacade.UpdateTask(task));
+        }
+        [HttpPost]
+        [Route("SetColumnTask")]
+        [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
+        public IActionResult SetColumnTask(int columnId, int taskId)
+        {
+            return MapToIActionResult(() => _projectFacade.SetColumnTask(columnId,taskId));
         }
         [HttpPost]
         [Route("UpdateTimeLog")]

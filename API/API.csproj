@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Project_Chronos_Backend</RootNamespace>
+    <UserSecretsId>1e491d8f-ada9-4baf-af78-5f39be8120f4</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

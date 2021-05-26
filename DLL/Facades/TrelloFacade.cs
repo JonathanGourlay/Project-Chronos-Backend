@@ -22,23 +22,27 @@ namespace BLL.Facades
             _trello = trello;
         }
 
-        public IEnumerable<ProjectDto> GetBoards(string key, string token)
+        public IEnumerable<ProjectDto> GetBoards( string token)
         {
-            var boards = UnwapTask((() => _trello.GetBoards(key, token)));
+            var boards = UnwapTask((() => _trello.GetBoards( token)));
             //var boards =  _trello.GetBoards(key, token);
             var boardLists = new List<ProjectDto>();
             
-            for (int i = 0; i < boards.Count(); i++)
+            for (var i = 0; i < boards.Count(); i++)
             {
                 var board = boards[i];
                 boardLists.Add(new ProjectDto()
                 {
+
                     ProjectName = board.Name,
+                    TrelloProjectId = board.Id,
                     Columns = board.Lists.Select((list => new ColumnDto()
                     {
                         ColumnName = list.Name,
+                        TrelloColumnId = list.Id,
                         Tasks = list.Cards.Select((card => new TaskDto() 
                             { TaskName = card.Name,
+                                TrelloTaskId = card.Id,
                                 Comments = card.Description,
                                 StartTime = card.CreationDate,
                                 ExpectedEndTime = card.CreationDate.Date,
@@ -60,9 +64,9 @@ namespace BLL.Facades
             return boardLists;
         }
 
-        public ProjectDto GetBoardById(string key, string token, string projectId)
+        public ProjectDto GetBoardById( string token, string projectId)
         {
-            var board = UnwapTask((() => _trello.GetBoardById(key, token, projectId)));
+            var board = UnwapTask((() => _trello.GetBoardById( token, projectId)));
             var boardDto = new ProjectDto();
             var lists = board.Lists;
             boardDto.ProjectName = board.Name;
@@ -73,9 +77,11 @@ namespace BLL.Facades
             boardDto.Columns = board.Lists.Select((list => new ColumnDto()
                     {
                         ColumnName = list.Name,
+                        TrelloColumnId = list.Id,
                         Tasks = list.Cards.Select((card => new TaskDto()
                         {
                             TaskName = card.Name,
+                            TrelloTaskId = card.Id,
                             Comments = card.Description,
                             StartTime = card.CreationDate,
                             ExpectedEndTime = card.CreationDate.Date,
@@ -86,9 +92,19 @@ namespace BLL.Facades
                 ));
             return boardDto;
         }
-        public void MoveCard(string key, string token, string cardId, int newPosition)
+        public void MoveCard( string token,string cardId, string newPosition, string boardId)
         {
-           _trello.MoveCard(key, token, cardId, newPosition);
+           _trello.MoveCard( token ,cardId, newPosition, boardId);
+        }
+
+        public void DeleteCard(string token, string cardId)
+        {
+            _trello.DeleteCard(token,cardId);
+        }
+
+        public void AddCard(string token, string listId, string position, TaskDto task)
+        {
+            _trello.AddCard(token,listId,position,task);
         }
         public T UnwapTask<T>(Func<Task<T>> getData)
         {

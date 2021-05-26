@@ -7,9 +7,11 @@ namespace BLL.Interfaces
 {
     public interface ITrelloFacade
     {
-       IEnumerable<ProjectDto> GetBoards(string key,string token);
-       ProjectDto GetBoardById(string key, string token, string projectId);
-       void MoveCard(string key, string token, string cardId, int newPosition);
+       IEnumerable<ProjectDto> GetBoards(string token);
+       ProjectDto GetBoardById(string token, string projectId);
+       void MoveCard( string token, string cardId, string newPosition, string boardId);
+       void DeleteCard(string token, string cardId);
+       void AddCard(string token, string listId, string position, TaskDto task);
 
     }
 }

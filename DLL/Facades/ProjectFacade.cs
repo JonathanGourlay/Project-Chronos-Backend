@@ -25,6 +25,10 @@ namespace BLL.Facades
         {
             return _projectRepo.GetProject(projectId);
         }
+        public IEnumerable<ProjectDto> GetUserProjects(int userId)
+        {
+            return _projectRepo.GetUserProjects(userId);
+        }
 
         public IEnumerable<TaskDto> GetUserTasks(int userId)
         {
@@ -75,7 +79,7 @@ namespace BLL.Facades
             return _projectRepo.SetProjectUser(projectId, userId);
         }
 
-        public int UpdateProject(UpdateProject project)
+        public int UpdateProject(ProjectViewDto project)
         {
 
             return _projectRepo.UpdateProject(project);
@@ -89,6 +93,10 @@ namespace BLL.Facades
         public int UpdateTask(UpdateTask task)
         {
             return _projectRepo.UpdateTask(task);
+        }
+        public int SetColumnTask(int columndId, int taskId)
+        {
+            return _projectRepo.SetColumnTask(columndId, taskId);
         }
 
         public int UpdateTimeLog(UpdateTimeLog timelog)

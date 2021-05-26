@@ -62,6 +62,8 @@ namespace Project_Chronos_Backend
 
             services.Configure<ConnectionStrings>(option =>
                 Configuration.GetSection("ConnectionStrings").Bind(option));
+            services.Configure<AppSettings>(option =>
+                Configuration.GetSection("AppSettings").Bind(option));
             ScanForAllRemainingRegistrations(services);
         }
         public static void ScanForAllRemainingRegistrations(IServiceCollection services)

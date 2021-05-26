@@ -1,10 +1,14 @@
 using System;
+using System.ComponentModel.DataAnnotations;
+using Manatee.Trello;
 
 namespace ObjectContracts.DataTransferObjects
 {
     public class TaskViewDto
     {
         public int TaskId { get; set; }
+        [Required]
+        public string TrelloTaskId { get; set; }
         public string TaskName { get; set; }
         public string Comments { get; set; }
         public int Points { get; set; }

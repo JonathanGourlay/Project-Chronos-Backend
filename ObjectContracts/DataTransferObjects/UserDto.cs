@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ObjectContracts.DataTransferObjects
 {
     public class UserDto
     {
+        [Required]
         public int UserId { get; set; }
         public string UserName { get; set; }
         public string Role { get; set; }
@@ -12,9 +15,6 @@ namespace ObjectContracts.DataTransferObjects
 
         public UserDto()
         {
-            UserName = new string(UserName);
-            Role = new string(Role);
-            Archived = new string(Archived);
         }
 
         public UserDto(UserViewDto dto)
@@ -28,5 +28,6 @@ namespace ObjectContracts.DataTransferObjects
             AccessToken = dto.AccessToken;
             Archived = dto.Archived;
         }
+
     }
 }

@@ -1,12 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Manatee.Trello;
 
 namespace ObjectContracts.DataTransferObjects
 {
     public class TaskDto
     {
         public int TaskId { get; set; }
+        [Required]
+        public string TrelloTaskId { get; set; }
+       
         public string TaskName { get; set; }
         public string Comments { get; set; }
         public int Points { get; set; }
@@ -19,12 +24,14 @@ namespace ObjectContracts.DataTransferObjects
         public string TaskArchived { get; set; }
         public string ExtensionReason { get; set; }
         public string AddedReason { get; set; }
-        public IEnumerable<TimeLogDto> Timelogs { get; set; }
-        public IEnumerable<UserDto> Users { get; set; }
+        public IEnumerable<TimeLogViewDto> Timelogs { get; set; }
+        public IEnumerable<UserViewDto> Users { get; set; }
+       
 
         public TaskDto(TaskViewDto dto)
         {
             TaskId = dto.TaskId;
+            TrelloTaskId = dto.TrelloTaskId;
             TaskName = dto.TaskName;
             Comments = dto.Comments;
             Points = dto.Points;
@@ -41,49 +48,55 @@ namespace ObjectContracts.DataTransferObjects
 
         public TaskDto()
         {
-            Timelogs = new List<TimeLogDto>();
-            Users = new List<UserDto>();
+            Timelogs = new List<TimeLogViewDto>();
+            Users = new List<UserViewDto>();
         }
 
-        public void AddTimelog(TimeLogDto timelog)
+        public void AddTimelog(TimeLogViewDto timelog)
         {
             // for safety as the constructor might not have run
             if (Timelogs == null)
             {
-                Timelogs = new List<TimeLogDto>();
+                Timelogs = new List<TimeLogViewDto>();
             }
 
-            Timelogs.ToList().Add(timelog);
+            Timelogs.Append(timelog);
+            //Timelogs.ToList().Add(timelog);
         }
 
-        public void AddTimelog(IEnumerable<TimeLogDto> timelogs)
+        public void AddTimelog(IEnumerable<TimeLogViewDto> timelogs)
         {
             if (Timelogs == null)
             {
-                Timelogs = new List<TimeLogDto>();
+                Timelogs = new List<TimeLogViewDto>();
             }
-            
-            Timelogs.ToList().AddRange(timelogs);
-        }
-        public void AddUser(UserDto user)
-        {
-            // for safety as the constructor might not have run
-            if (Users == null)
+
+            foreach (var timelog in timelogs)
             {
-                Users = new List<UserDto>();
+                Timelogs.Append(timelog);
             }
-
-            Users.ToList().Add(user);
+            //timelogs.Select(dto => Timelogs.Append(dto));
+            //Timelogs.ToList().AddRange(timelogs);
         }
+        //public void AddUser(UserDto user)
+        //{
+        //    // for safety as the constructor might not have run
+        //    if (Users == null)
+        //    {
+        //        Users = new List<UserDto>();
+        //    }
 
-        public void AddUser(IEnumerable<UserDto> users)
-        {
-            if (Users == null)
-            {
-                Users = new List<UserDto>();
-            }
+        //    Users.ToList().Add(user);
+        //}
 
-            Users.ToList().AddRange(users);
-        }
+        //public void AddUser(IEnumerable<UserDto> users)
+        //{
+        //    if (Users == null)
+        //    {
+        //        Users = new List<UserDto>();
+        //    }
+
+        //    Users.ToList().AddRange(users);
+        //}
     }
 }

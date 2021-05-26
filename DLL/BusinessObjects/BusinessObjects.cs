@@ -117,6 +117,16 @@ namespace BLL.BusinessObjects
             Archived = dto.Archived;
             Role = dto.Role;
         }
+        public UserObject(UserViewDto dto)
+        {
+            UserId = dto.UserId;
+            UserName = dto.UserName;
+            Email = dto.Email;
+            Password = dto.Password;
+            AccessToken = dto.AccessToken;
+            Archived = dto.Archived;
+            Role = dto.Role;
+        }
 
         public UserDto ToDto()
         {
@@ -208,6 +218,15 @@ namespace BLL.BusinessObjects
         }
 
         public TimeLogObject(TimeLogDto dto)
+        {
+            TimeLogId = dto.TimeLogId;
+            StartTime = dto.StartTime;
+            EndTime = dto.EndTime;
+            TotalTime = dto.TotalTime;
+            Billable = dto.Billable;
+            Archived = dto.Archived;
+        }
+        public TimeLogObject(TimeLogViewDto dto)
         {
             TimeLogId = dto.TimeLogId;
             StartTime = dto.StartTime;

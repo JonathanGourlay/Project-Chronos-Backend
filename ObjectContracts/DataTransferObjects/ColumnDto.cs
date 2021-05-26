@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace ObjectContracts.DataTransferObjects
@@ -7,12 +8,14 @@ namespace ObjectContracts.DataTransferObjects
     public class ColumnDto
     {
         public int ColumnId { get; set; }
+        [Required]
+        public string TrelloColumnId { get; set; }
         public string ColumnName { get; set; }
         public int PointsTotal { get; set; }
         public int AddedPoints { get; set; }
         public IEnumerable<TaskDto> Tasks { get; set; }
 
-       
+
 
         //public ColumnDto(int columnId, string columnName, int pointsTotal, int addedPoints, List<TaskDto> tasks)
         //{
@@ -22,24 +25,20 @@ namespace ObjectContracts.DataTransferObjects
         //    AddedPoints = addedPoints;
         //    Tasks = tasks;
         //}
-
+        public ColumnDto()
+        {
+        }
         public ColumnDto(ColumnViewDto dto)
         {
             ColumnId = dto.ColumnId;
+            TrelloColumnId = dto.TrelloColumnId;
             ColumnName = dto.ColumnName;
             PointsTotal = dto.PointsTotal;
             AddedPoints = dto.AddedPoints;
             Tasks = dto.Tasks;
         }
 
-        public ColumnDto()
-        {
-            ColumnId = new int();
-            ColumnName = new string(ColumnName);
-            PointsTotal = new int();
-            AddedPoints = new int();
-            Tasks = new List<TaskDto>();
-        }
+       
 
         public void AddTask(TaskViewDto dto)
         {
@@ -49,7 +48,10 @@ namespace ObjectContracts.DataTransferObjects
 
         public void AddTask(TaskDto dto)
         {
-            Tasks ??= new List<TaskDto>();
+            if (Tasks == null)
+            {
+                Tasks = new List<TaskDto>();
+            }
             Tasks.ToList().Add(dto);
         }
     }
