@@ -12,6 +12,8 @@ namespace ObjectContracts.DataTransferObjects
         public string Password { get; set; }
         public string AccessToken { get; set; }
         public string Archived { get; set; }
+        public int Points { get; set; }
+        public int AddedPoints { get; set; }
         public int linkUserTaskId { get; set; }
     }
 }

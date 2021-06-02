@@ -30,6 +30,11 @@ namespace BLL.Facades
             return _projectRepo.GetUserProjects(userId);
         }
 
+        public IEnumerable<ProjectDto> GetAdminProjects()
+        {
+            return _projectRepo.GetAdminProjects();
+        }
+
         public IEnumerable<TaskDto> GetUserTasks(int userId)
         {
             var tasks = _projectRepo.GetUserTasks(userId);

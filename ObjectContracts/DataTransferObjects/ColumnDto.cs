@@ -8,6 +8,7 @@ namespace ObjectContracts.DataTransferObjects
     public class ColumnDto
     {
         public int ColumnId { get; set; }
+        public int ProjectId { get; set; }
         [Required]
         public string TrelloColumnId { get; set; }
         public string ColumnName { get; set; }

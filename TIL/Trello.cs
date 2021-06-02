@@ -56,8 +56,7 @@ namespace TIL
             var card = client.Card(cardId);
             var newCol = client.List(newPosition);
             var board = client.Board(boardId);
-            if (card.List.Id != newCol.Id && card.List != null )
-            {
+           
                 try
                 {
                     card.List = new List(newCol.Id, TrelloAuthorization.Default)
@@ -77,7 +76,7 @@ namespace TIL
                     throw;
                 }
                
-            }
+            
           
             await card.Refresh();
             
@@ -113,7 +112,7 @@ namespace TIL
             var newCol = client.List(position);
             try
             {
-                client.List(listId).Cards.Add(task.TaskName, task.Comments, newCol.Position, task.ExpectedEndTime,
+               await client.List(listId).Cards.Add(task.TaskName, task.Comments, newCol.Position, task.ExpectedEndTime,
                     task.TaskDone.Equals("True"));
             }
             catch (Exception e)

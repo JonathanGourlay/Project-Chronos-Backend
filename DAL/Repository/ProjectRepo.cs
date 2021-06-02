@@ -73,6 +73,7 @@ namespace DAL.Repository
 
         public int CreateProject(CreateProject project)
         {
+            var res = project;
             var result = ExecuteFunc(con =>
                 con.QuerySingleOrDefault<int>(ProjectSql.CreateProject, new
                 {
@@ -108,74 +109,183 @@ namespace DAL.Repository
                 var columns = new List<ColumnDto>();
                 foreach (var columnDto in enumeratedColumnDtos)
                 {
-                    var newColumnDto = columnDto;
-                    foreach (var taskViewDto in enumeratedTaskDtos)
+                    if (project.ProjectId == columnDto.ProjectId)
                     {
-                        
-                        if (columnDto.ColumnId == taskViewDto.userColId ||
-                            columnDto.ColumnId == taskViewDto.timelogColId)
+                        var newColumnDto = columnDto;
+                        foreach (var taskViewDto in enumeratedTaskDtos)
                         {
-                            var thisTasksTimelogs = new List<TimeLogViewDto>();
-                            var thisUsers = new List<UserViewDto>();
-                            var thisTaskUsers = new List<UserViewDto>();
-                            // Get the timelogs related to this task
-                            foreach (var timelog in timeLogDtos)
-                                
+
+                            if (columnDto.ColumnId == taskViewDto.userColId ||
+                                columnDto.ColumnId == taskViewDto.timelogColId)
+                            {
+                                var thisTasksTimelogs = new List<TimeLogViewDto>();
+                                var thisUsers = new List<UserViewDto>();
+                                var thisTaskUsers = new List<UserViewDto>();
+                                // Get the timelogs related to this task
+                                foreach (var timelog in timeLogDtos)
+
                                     thisTasksTimelogs.Add(timelog);
-                            //
-                            foreach (var user in UserViewDtos)
-                                thisUsers.Add(user);
-                            //
-                            
-                            var task = new TaskDto(taskViewDto);
-                            var timelogs = thisTasksTimelogs.Select(t => t).ToList();
-                            var users = thisUsers.Select(u => u).ToList();
-                            // Add the timelogs to the task
-                            //task.AddTimelog(timelogs);
-                            // task.AddUser(users);
-                            // Add the task to the column
-                            // if null instantie the list
-                            if (newColumnDto.Tasks == null)
-                            {
-                                newColumnDto.Tasks = new List<TaskDto>();
-                            }
-                            if (task.Timelogs == null)
-                            {
-                                task.Timelogs = new List<TimeLogViewDto>();
-                            }
+                                //
+                                foreach (var user in UserViewDtos)
+                                    thisUsers.Add(user);
+                                //
 
-                            foreach (var timelog in timelogs)
-                            {
-                                if (timelog.linkTimelogTaskId == task.TaskId)
+                                var task = new TaskDto(taskViewDto);
+                                var timelogs = thisTasksTimelogs.Select(t => t).ToList();
+                                var users = thisUsers.Select(u => u).ToList();
+                                // Add the timelogs to the task
+                                //task.AddTimelog(timelogs);
+                                // task.AddUser(users);
+                                // Add the task to the column
+                                // if null instantie the list
+                                if (newColumnDto.Tasks == null)
                                 {
-                                    task.Timelogs = task.Timelogs.Append(timelog);
+                                    newColumnDto.Tasks = new List<TaskDto>();
                                 }
 
-                            }
-                            if (task.Users == null)
-                            {
-                                task.Users = new List<UserViewDto>();
-                            }
-
-                            foreach (var user in UserViewDtos)
-                            {
-                                if (user.linkUserTaskId == task.TaskId)
+                                if (task.Timelogs == null)
                                 {
-                                    task.Users = task.Users.Append(user);
+                                    task.Timelogs = new List<TimeLogViewDto>();
                                 }
-                              
+
+                                foreach (var timelog in timelogs)
+                                {
+                                    if (timelog.linkTimelogTaskId == task.TaskId)
+                                    {
+                                        task.Timelogs = task.Timelogs.Append(timelog);
+                                    }
+
+                                }
+
+                                if (task.Users == null)
+                                {
+                                    task.Users = new List<UserViewDto>();
+                                }
+
+                                foreach (var user in UserViewDtos)
+                                {
+                                    if (user.linkUserTaskId == task.TaskId)
+                                    {
+                                        task.Users = task.Users.Append(user);
+                                    }
+
+                                }
+
+                                // append to the list, doesnt break the ienumerable, is just worked out at the next .ToList()
+                                newColumnDto.Tasks = newColumnDto.Tasks.Append(task);
                             }
-                            // append to the list, doesnt break the ienumerable, is just worked out at the next .ToList()
-                            newColumnDto.Tasks = newColumnDto.Tasks.Append(task);
                         }
+
+                        columns.Add(newColumnDto);
                     }
-                    columns.Add(newColumnDto);
                 }
                 userProjects.Add(new ProjectDto(project, usersDtos, columns));
             }
 
             return userProjects;
         }
+
+
+        public IEnumerable<ProjectDto> GetAdminProjects()
+        {
+            var (enumeratedColumnDtos, enumeratedTaskDtos, timeLogDtos, usersDtos, projectDto, UserViewDtos) =
+                ExecuteFunc(con =>
+                {
+                    var query = con.QueryMultiple(ProjectSql.GetAdminProjects);
+                    var timeLogs = query.Read<TimeLogViewDto>();
+                    var user = query.Read<UserDto>();
+                    var usersTasks = query.Read<UserViewDto>();
+                    var tasks = query.Read<TaskViewDto>();
+                    var columns = query.Read<ColumnDto>();
+                    var projects = query.Read<ProjectViewDto>();
+                    return (columns.ToList(), tasks.ToList(), timeLogs.ToList(), user.ToList(), projects.ToList(),
+                        usersTasks.ToList());
+                }
+                );
+            var userProjects = new List<ProjectDto>();
+            foreach (var project in projectDto)
+            {
+                var columns = new List<ColumnDto>();
+                foreach (var columnDto in enumeratedColumnDtos)
+                {
+                    if (project.ProjectId == columnDto.ProjectId)
+                    {
+                        var newColumnDto = columnDto;
+                        foreach (var taskViewDto in enumeratedTaskDtos)
+                        {
+
+                            if (columnDto.ColumnId == taskViewDto.userColId ||
+                                columnDto.ColumnId == taskViewDto.timelogColId)
+                            {
+                                var thisTasksTimelogs = new List<TimeLogViewDto>();
+                                var thisUsers = new List<UserViewDto>();
+                                var thisTaskUsers = new List<UserViewDto>();
+                                // Get the timelogs related to this task
+                                foreach (var timelog in timeLogDtos)
+
+                                    thisTasksTimelogs.Add(timelog);
+                                //
+                                foreach (var user in UserViewDtos)
+                                    thisUsers.Add(user);
+                                //
+
+                                var task = new TaskDto(taskViewDto);
+                                var timelogs = thisTasksTimelogs.Select(t => t).ToList();
+                                var users = thisUsers.Select(u => u).ToList();
+                                // Add the timelogs to the task
+                                //task.AddTimelog(timelogs);
+                                // task.AddUser(users);
+                                // Add the task to the column
+                                // if null instantie the list
+                                if (newColumnDto.Tasks == null)
+                                {
+                                    newColumnDto.Tasks = new List<TaskDto>();
+                                }
+
+                                if (task.Timelogs == null)
+                                {
+                                    task.Timelogs = new List<TimeLogViewDto>();
+                                }
+
+                                foreach (var timelog in timelogs)
+                                {
+                                    if (timelog.linkTimelogTaskId == task.TaskId)
+                                    {
+                                        task.Timelogs = task.Timelogs.Append(timelog);
+                                    }
+
+                                }
+
+                                if (task.Users == null)
+                                {
+                                    task.Users = new List<UserViewDto>();
+                                }
+
+                                foreach (var user in UserViewDtos)
+                                {
+                                    if (user.linkUserTaskId == task.TaskId)
+                                    {
+                                        task.Users = task.Users.Append(user);
+                                    }
+
+                                }
+
+                                // append to the list, doesnt break the ienumerable, is just worked out at the next .ToList()
+                                newColumnDto.Tasks = newColumnDto.Tasks.Append(task);
+                            }
+                        }
+
+                        columns.Add(newColumnDto);
+                    }
+                }
+                userProjects.Add(new ProjectDto(project, usersDtos, columns));
+            }
+
+            return userProjects;
+        }
+
+
+
 
         public int UpdateProject(ProjectViewDto project)
         {
@@ -246,6 +356,7 @@ namespace DAL.Repository
 
         public int CreateTask(CreateTask create)
         {
+            var res = create;
             var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.CreateTask,
                 new
                 {
@@ -260,7 +371,7 @@ namespace DAL.Repository
                     create.TaskDone,
                     create.TaskDeleted,
                     create.TaskArchived,
-                    create.ExtensionReason,
+                    ExtensionReason = create.ExtensionReason,
                     create.AddedReason
                 }));
 

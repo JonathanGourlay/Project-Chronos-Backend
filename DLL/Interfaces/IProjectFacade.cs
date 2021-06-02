@@ -11,6 +11,7 @@ namespace BLL.Interfaces
         //IEnumerable<ProjectTaskDto> GetRepoProjects(IEnumerable<int> projectId);
         IEnumerable<ProjectDto> GetProject(int projectId);
         IEnumerable<ProjectDto> GetUserProjects(int userId);
+        IEnumerable<ProjectDto> GetAdminProjects();
         IEnumerable<TaskDto> GetUserTasks(int userId);
         UserDto CheckLogin(string email, string password);
 

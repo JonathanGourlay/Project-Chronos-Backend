@@ -37,6 +37,13 @@ namespace Project_Chronos_Backend.Controllers
             return MapToIActionResult(() => _projectFacade.GetUserProjects(userId));
         }
         [HttpPost]
+        [Route("GetAdminProjects")]
+        [ProducesResponseType(typeof(List<ProjectDto>), 200)]
+        public IActionResult GetAdminProjects()
+        {
+            return MapToIActionResult(() => _projectFacade.GetAdminProjects());
+        }
+        [HttpPost]
         [Route("GetUserTasks")]
         [ProducesResponseType(typeof(List<TaskObject>), 200)]
         public IActionResult GetUserTasks([FromBody] int userId)

@@ -36,12 +36,14 @@ namespace BLL.Facades
 
                     ProjectName = board.Name,
                     TrelloProjectId = board.Id,
-                    Columns = board.Lists.Select((list => new ColumnDto()
+                    Columns = board.Lists.Select(((list,index) => new ColumnDto()
                     {
                         ColumnName = list.Name,
+                        ColumnId = index,
                         TrelloColumnId = list.Id,
                         Tasks = list.Cards.Select((card => new TaskDto() 
                             { TaskName = card.Name,
+                                TaskId = card.ShortId.Value,
                                 TrelloTaskId = card.Id,
                                 Comments = card.Description,
                                 StartTime = card.CreationDate,

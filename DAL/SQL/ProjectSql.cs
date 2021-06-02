@@ -2,83 +2,7 @@
 {
     public static class ProjectSql
     {
-  //      public static string CreateProjectAndTasks = @"
-  //      DECLARE @generated_project_key INT;
-  //      -- CREATE ONE PROJECT, OUTPUT CREATED PK INTO @generated_project_key
-  //      INSERT INTO [dbo].[Projects](ProjectName) 
-  //      VALUES (@ProjectName)
-  //      SET @generated_project_key = @@IDENTITY  
-
-		//-- CREATE MULTIPLE TASKS, OUPUT EACH PK INTO @generated_task_keys
-  //      INSERT INTO [dbo].Users(UserName, Role) 
-  //      --OUTPUT inserted.UserId INTO @generated_user_keys
-  //      SELECT UserName, Role
-  //      FROM @Users
-        
-        
-		//-- CREATE MULTIPLE COLUMNS,  OUPUT EACH PK INTO @generated_column_keys
-		//INSERT INTO [dbo].[Columns](ColumnName) 
-  //      --OUTPUT inserted.ColumnId INTO @generated_column_keys
-  //      SELECT ColumnName
-  //      FROM @Columns
-
-  //      -- CREATE MULTIPLE TASKS, OUPUT EACH PK INTO @generated_task_keys
-  //      INSERT INTO [dbo].[Tasks](TaskName, Comments) 
-  //      --OUTPUT inserted.TaskId INTO @generated_task_keys
-  //      SELECT TaskName, Comments
-  //      FROM @Tasks
-
-		//-- CREATE MULTIPLE Timelogs, OUPUT EACH PK INTO @generated_timelog_keys
-  //      INSERT INTO [dbo].[TimeLogs](StartTime, EndTime, TotalTime) 
-  //     -- OUTPUT inserted.TimeLogId INTO @generated_timelog_keys
-  //      SELECT StartTime, EndTime, TotalTime
-  //      FROM  @TimeLogs
-  //      SELECT @generated_project_key
-  //      ";
-
-  //      public static string CreatLinks = @"
-  //      --DECLARE @generated_project_key INT;
-  //      --DECLARE @generated_column_keys AS [dbo].[IdType];
-
-
-  //      INSERT INTO [dbo].[ColumnTasks](Columnid, TaskId) 
-  //      SELECT Columnid, TaskId
-  //      FROM  @ColumnTasks
-     
-		//INSERT INTO [dbo].[UserTimeLogs](UserId, TimeLogId) 
-  //      SELECT UserId, TimeLogId
-  //      FROM  @UserTimeLogs
-
-		// INSERT INTO [dbo].[ProjectUsers](ProjectId, UserId) 
-  //      SELECT ProjectId, UserId
-  //      FROM  @ProjectUsers
-
-		// INSERT INTO [dbo].[TasksTimeLogs](TaskId, TimeLogId) 
-  //      SELECT TaskId, TimeLogId
-  //      FROM  @TaskTimeLogs
-
-		//INSERT INTO [dbo].[UserTasks](UserId, TaskId) 
-  //      SELECT UserId, TaskId
-  //      FROM  @UserTasks
-
-		//INSERT INTO [dbo].[ProjectColumns](ProjectId, ColumnId)
-  //      SELECT ProjectId, ColumnId
-  //      FROM @ProjectColumns
-  //      ";
-
-  //      public static string GetProjectAndTasks = @"
-  //      SELECT p.[ProjectId]
-  //      ,p.[ProjectName]
-	 //   ,t.TaskId
-	 //   ,t.TaskName
-  //      FROM [dbo].[Projects] as p
-
-  //      INNER JOIN ProjectTasks as pt ON p.ProjectId = pt.ProjectId
-  //      INNER JOIN Tasks as t on t.TaskId = pt.TaskId
-
-  //      WHERE p.ProjectId IN (@ProjectIds)
-  //      ";
-
+  
 
         public static string CreateProject = @"
          INSERT INTO [dbo].[Projects](ProjectName, StartTime,EndTime,ExpectedEndTime, PointsTotal,AddedPointsTotal, ProjectComplete, ProjectArchived,TimeIncrement) 
@@ -191,8 +115,113 @@
 		SELECT distinct TimeLogId, timeStart as StartTime, timeEnd as EndTime, timeTotal,Billable,timeArch,linkTimelogTaskId, timelogUserName, timelogRole FROM #tempTable
         SELECT distinct UserId, UserName, Role, Email, Archived FROM #tempTable
         SELECT distinct taskUserId as UserId, taskUserName as UserName, linkUserTaskId, taskEmail, taskArch, taskRole as Role FROM #tempTable
-        SELECT distinct TaskId, TaskName, Comments,PointsTotal,AddedPointsTotal,taskStartTime as StartTime,taskEndTime as EndTime,taskExpectedEndTime as ExpectedEndTime,TaskDone,TaskDeleted,TaskArchived,ExtensionReason,AddedReason,timelogColId FROM #tempTable
-        select distinct ColumnId,ColumnName, ColumnPointsTotal, ColumnAddedPointsTotal from #tempTable
+        SELECT distinct TaskId, TaskName, Comments,PointsTotal as Points,AddedPointsTotal as AddedPoints,taskStartTime as StartTime,taskEndTime as EndTime,taskExpectedEndTime as ExpectedEndTime,TaskDone,TaskDeleted,TaskArchived,ExtensionReason,AddedReason,timelogColId FROM #tempTable
+        select distinct ColumnId,ColumnName, ColumnPointsTotal, ColumnAddedPointsTotal, ProjectId from #tempTable
+        SELECT distinct ProjectId, ProjectName,ProjectStartTime,ProjectEndTime,ExpectedEndTime,ProjectPointsTotal,ProjectAddedPoints,ProjectComplete,ProjectArchived,TimeIncrement FROM #tempTable
+       
+        DROP TABLE #tempTable";
+        public static string GetAdminProjects = @"        
+         SELECT 
+			   p.ProjectId,
+               p.ProjectName,
+			   p.StartTime as ProjectStartTime,
+			   p.EndTime as ProjectEndTime,
+			   p.ExpectedEndTime,
+			   p.PointsTotal as ProjectPointsTotal,
+			   p.AddedPointsTotal as ProjectAddedPoints,
+			   p.ProjectComplete,
+			   p.ProjectArchived,
+			   p.TimeIncrement,
+           
+		  pc.ColumnId as pcCol,
+         ct.ColumnId as timelogColId,
+         ct.TaskId as linkTaskId,
+           col.ColumnId,
+           col.ColumnName,
+		  col.PointsTotal as ColumnPointsTotal,
+		  col.AddedPointsTotal as ColumnAddedPointsTotal,
+           
+            task.TaskId,
+            task.TaskName,
+            task.Comments,
+		   task.PointsTotal,
+		   task.AddedPointsTotal,
+		   task.StartTime as taskStartTime,
+		   task.EndTime as taskEndTime,
+		   task.ExpectedEndTime as taskExpectedEndTime,
+		   task.TaskDone,
+		   task.TaskDeleted,
+		   task.TaskArchived,
+		   task.ExtensionReason,
+		   task.AddedReason,
+            
+          
+            time.TimeLogId,
+            time.StartTime as timeStart,
+            time.EndTime as timeEnd,
+            time.TotalTime as timeTotal,
+		   time.Billable,
+		   time.Archived as timeArch,
+
+			  
+               u.UserId,
+               u.UserName,
+               u.Role,
+			   u.Email,
+			   u.Archived,
+               taskUsers.UserId as taskUserId,
+			   ut.TaskId as linkUserTaskId,
+               taskUsers.UserName as taskUserName,
+               taskUsers.Role as taskRole,
+			   taskUsers.Email as taskEmail,
+			   taskusers.Archived as taskArch,
+			   ttl.TaskId as linkTimelogTaskId,
+			   timelogUsers.UserName as timelogUserName,
+			   timelogUsers.Role as timelogRole
+
+			   
+
+        INTO #tempTable
+        
+        FROM   [dbo].[Users] as u
+		LEFT JOIN [dbo].[ProjectUsers] as pu
+                   on pu.UserId = u.UserId
+		LEFT JOIN [dbo].[Projects] as p
+					on p.ProjectId = pu.ProjectId
+		LEFT JOIN [dbo].[ProjectColumns] as pc
+                   on pc.ProjectId = pu.ProjectId
+		LEFT JOIN [dbo].[Users] as projectUsers
+                   on projectUsers.UserId = pu.UserId
+		LEFT JOIN [dbo].[Columns] as col
+                   on col.ColumnId = pc.ColumnId
+		LEFT JOIN [dbo].[ColumnTasks] as ct
+                     on ct.ColumnId = col.ColumnId
+		LEFT JOIN [dbo].[Tasks] as task
+                     on ct.TaskId = task.TaskId
+		LEFT JOIN [dbo].[UserTasks] as ut
+                     on   task.TaskId = ut.TaskId
+		LEFT JOIN [dbo].[Users] as taskUsers
+                     on taskUsers.UserId = ut.UserId
+		LEFT JOIN [dbo].[TasksTimeLogs] as ttl
+                     on ttl.TaskId = task.TaskId
+		LEFT JOIN [dbo].[TimeLogs] as time
+                      on ttl.TimeLogId=time.TimeLogId
+		LEFT JOIN [dbo].UserTimeLogs as utl
+					  on utl.TimeLogId = ttl.TimeLogId
+		LEFT JOIN [dbo].[Users] as timelogUsers
+                     on utl.UserId = timelogUsers.UserId
+
+
+        ORDER  BY pu.[ProjectId] 
+
+		
+  
+		
+		SELECT distinct TimeLogId, timeStart as StartTime, timeEnd as EndTime, timeTotal,Billable,timeArch,linkTimelogTaskId, timelogUserName, timelogRole FROM #tempTable
+        SELECT distinct UserId, UserName, Role, Email, Archived FROM #tempTable
+        SELECT distinct taskUserId as UserId, taskUserName as UserName, linkUserTaskId, taskEmail, taskArch, taskRole as Role FROM #tempTable
+        SELECT distinct TaskId, TaskName, Comments,PointsTotal as Points,AddedPointsTotal as AddedPoints,taskStartTime as StartTime,taskEndTime as EndTime,taskExpectedEndTime as ExpectedEndTime,TaskDone,TaskDeleted,TaskArchived,ExtensionReason,AddedReason,timelogColId FROM #tempTable
+        select distinct ColumnId,ColumnName, ColumnPointsTotal, ColumnAddedPointsTotal, ProjectId from #tempTable
         SELECT distinct ProjectId, ProjectName,ProjectStartTime,ProjectEndTime,ExpectedEndTime,ProjectPointsTotal,ProjectAddedPoints,ProjectComplete,ProjectArchived,TimeIncrement FROM #tempTable
        
         DROP TABLE #tempTable";
@@ -348,9 +377,9 @@
         ";
         public static string CreateTask = @"
         DECLARE @generated_task_key int;
-        INSERT INTO [dbo].[Tasks](TaskName, Comments, PointsTotal, AddedPointsTotal, StartTime, EndTime, ExpectedEndTime, TaskDone, TaskDeleted, TaskArchived, AddedReason)
+        INSERT INTO [dbo].[Tasks](TaskName, Comments, PointsTotal, AddedPointsTotal, StartTime, EndTime, ExpectedEndTime, TaskDone, TaskDeleted, TaskArchived, AddedReason, ExtensionReason)
         OUTPUT INSERTED.TaskId
-        VALUES(@TaskName, @Comments, @PointsTotal, @AddedPointsTotal, @StartTime, @EndTime, @ExpectedEndTime, @TaskDone, @TaskDeleted, @TaskArchived, @AddedReason)
+        VALUES(@TaskName, @Comments, @PointsTotal, @AddedPointsTotal, @StartTime, @EndTime, @ExpectedEndTime, @TaskDone, @TaskDeleted, @TaskArchived, @AddedReason, @ExtensionReason)
         SET @generated_task_key = @@IDENTITY  
         INSERT INTO [dbo].[ColumnTasks](ColumnId, TaskId)
         SELECT @ColumnId, @generated_task_key
