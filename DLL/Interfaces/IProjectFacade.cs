@@ -16,7 +16,7 @@ namespace BLL.Interfaces
         UserDto CheckLogin(string email, string password);
 
         //int Create(ProjectDto project);
-
+        IEnumerable<UserDto> GetUsers();
         int CreateProject(CreateProject project);
         int CreateColumn(CreateColumn column);
         int CreateTask(CreateTask task);

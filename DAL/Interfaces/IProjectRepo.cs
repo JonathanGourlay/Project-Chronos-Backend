@@ -21,6 +21,7 @@ namespace DAL.Interfaces
         int CreateTask(CreateTask task);
         int CreateTimeLog(CreateTimeLog timelog);
         UserDto CreateUser(CreateUser createUser);
+        IEnumerable<UserDto> GetUsers();
         int SetTaskUser(int taskId, int userId);
         int SetProjectUser(int projectId, int userId);
 

@@ -367,7 +367,16 @@
         SELECT @ProjectId, @generated_column_key
         
         ";
-
+        public static string GetUsers = @"
+     SELECT TOP (1000) [UserId]
+      ,[UserName]
+      ,[Role]
+      ,[Email]
+      ,[Archived]
+      ,[Password]
+      ,[AccessToken]
+  FROM [dbo].[Users]
+        ";
         public static string UpdateColumn = @"
         UPDATE [dbo].[Columns]
         SET[ColumnName] = @ColumnName,

@@ -73,6 +73,12 @@ namespace BLL.Facades
 
             return _projectRepo.CreateUser(user);
         }
+        public IEnumerable<UserDto> GetUsers()
+        {
+
+            return _projectRepo.GetUsers();
+        }
+
 
         public int SetTaskUser(int taskId, int userId)
         {

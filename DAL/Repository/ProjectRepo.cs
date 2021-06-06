@@ -415,6 +415,12 @@ namespace DAL.Repository
             return result;
         }
 
+        public IEnumerable<UserDto> GetUsers()
+        {
+            var result = ExecuteFunc(con =>
+                con.Query<UserDto>(ProjectSql.GetUsers));
+            return result;
+        }
         public int UpdateUser(UpdateUser user)
         {
             var result = ExecuteFunc(con => con.QuerySingleOrDefault<int>(ProjectSql.UpdateUser,

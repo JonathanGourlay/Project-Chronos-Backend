@@ -13,12 +13,12 @@ namespace Project_Chronos_Backend.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class TrelloControllerrr: BaseController
+    public class TrelloController: BaseController
     {
         private readonly ILogger<ProjectController> _logger;
         private readonly ITrelloFacade _trelloFacade;
 
-        public TrelloControllerrr(ILogger<ProjectController> logger, ITrelloFacade trelloFacade)
+        public TrelloController(ILogger<ProjectController> logger, ITrelloFacade trelloFacade)
         {
             _logger = logger;
             _trelloFacade = trelloFacade;
