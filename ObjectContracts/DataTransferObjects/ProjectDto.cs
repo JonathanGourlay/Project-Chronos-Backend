@@ -19,6 +19,7 @@ namespace ObjectContracts.DataTransferObjects
         public DateTime ExpectedEndTime { get; set; }
         public int PointsTotal { get; set; }
         public int AddedPoints { get; set; }
+        public float PointsAchived { get; set; }
         public string ProjectComplete { get; set; }
         public string ProjectArchived { get; set; }
         public int TimeIncrement { get; set; }
@@ -39,6 +40,7 @@ namespace ObjectContracts.DataTransferObjects
             ExpectedEndTime = viewDto.ExpectedEndTime;
             PointsTotal = viewDto.PointsTotal;
             AddedPoints = viewDto.AddedPoints;
+            PointsAchived = viewDto.PointsAchived;
             ProjectComplete = viewDto.ProjectComplete;
             ProjectArchived = viewDto.ProjectArchived;
             TimeIncrement = viewDto.TimeIncrement;

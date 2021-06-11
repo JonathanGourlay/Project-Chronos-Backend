@@ -65,6 +65,11 @@ namespace BLL.Facades
 
         public int CreateTimeLog(CreateTimeLog timelog)
         {
+            var totalHours = timelog.endTime.Subtract(timelog.startTime).TotalHours;
+            timelog.totalTime = Convert.ToSingle(totalHours);
+
+            var niceTotal = TimeSpan.FromHours(totalHours);
+
             return _projectRepo.CreateTimeLog(timelog);
         }
 
@@ -83,6 +88,11 @@ namespace BLL.Facades
         public int SetTaskUser(int taskId, int userId)
         {
             return _projectRepo.SetTaskUser(taskId, userId);
+        }
+
+        public int MoveCard(int columndId, int taskId)
+        {
+            return _projectRepo.MoveCard(columndId, taskId);
         }
 
         public int SetProjectUser(int projectId, int userId)

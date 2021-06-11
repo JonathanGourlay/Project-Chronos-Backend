@@ -112,7 +112,7 @@
 		
   
 		
-		SELECT distinct TimeLogId, timeStart as StartTime, timeEnd as EndTime, timeTotal,Billable,timeArch,linkTimelogTaskId, timelogUserName, timelogRole FROM #tempTable
+		SELECT distinct TimeLogId, timeStart as StartTime, timeEnd as EndTime, timeTotal as TotalTime,Billable,timeArch,linkTimelogTaskId, timelogUserName, timelogRole FROM #tempTable
         SELECT distinct UserId, UserName, Role, Email, Archived FROM #tempTable
         SELECT distinct taskUserId as UserId, taskUserName as UserName, linkUserTaskId, taskEmail, taskArch, taskRole as Role FROM #tempTable
         SELECT distinct TaskId, TaskName, Comments,PointsTotal as Points,AddedPointsTotal as AddedPoints,taskStartTime as StartTime,taskEndTime as EndTime,taskExpectedEndTime as ExpectedEndTime,TaskDone,TaskDeleted,TaskArchived,ExtensionReason,AddedReason,timelogColId FROM #tempTable
@@ -217,7 +217,7 @@
 		
   
 		
-		SELECT distinct TimeLogId, timeStart as StartTime, timeEnd as EndTime, timeTotal,Billable,timeArch,linkTimelogTaskId, timelogUserName, timelogRole FROM #tempTable
+		SELECT distinct TimeLogId, timeStart as StartTime, timeEnd as EndTime, timeTotal as TotalTime,Billable,timeArch,linkTimelogTaskId, timelogUserName, timelogRole FROM #tempTable
         SELECT distinct UserId, UserName, Role, Email, Archived FROM #tempTable
         SELECT distinct taskUserId as UserId, taskUserName as UserName, linkUserTaskId, taskEmail, taskArch, taskRole as Role FROM #tempTable
         SELECT distinct TaskId, TaskName, Comments,PointsTotal as Points,AddedPointsTotal as AddedPoints,taskStartTime as StartTime,taskEndTime as EndTime,taskExpectedEndTime as ExpectedEndTime,TaskDone,TaskDeleted,TaskArchived,ExtensionReason,AddedReason,timelogColId FROM #tempTable
@@ -349,13 +349,6 @@
         FROM @generated_timelog_key
         ";
 
-        public static string GetUserstasks = @"
-       SELECT  tasks.TaskId, tasks.TaskName, tasks.Comments,tasks.Points,task.AddedPoints,task.StartTime,task.EndTime,task.ExcpectedEndTime,task.TaskDone,task.TaskDeleted,task.TaskArchived,task.ExtentionReasion,task.AddedReason, timelog.Billable,timelog.Archived, timelog.StartTime, timelog.EndTime, timelog.TotalTime, timelog.TimeLogId FROM [dbo].UserTasks as ut
-       JOIN [dbo].Tasks as tasks on tasks.TaskId = ut.TaskId
-       LEFT JOIN [dbo].UserTimelogs as utl on ut.UserId = utl.UserId
-       LEFT JOIN [dbo].TimeLogs as timelog on utl.TimeLogId = timelog.TimeLogId
-        WHERE ut.UserId = @UserId
-        ";
 
         public static string CreateColumn = @"
         DECLARE @generated_column_key int;
@@ -489,5 +482,35 @@
         SELECT @UserId, Id
         FROM @generated_timelog_key
         ";
+
+        public static string MoveTask = @"UPDATE [dbo].[ColumnTasks]
+   SET [ColumnId] = @ColumnId
+      ,[TaskId] = @TaskId
+ WHERE TaskId = @TaskId";
+
+        public static string GetUserTasks = @"SELECT
+		tasks.[TaskId]
+      ,tasks.[TaskName]
+      ,tasks.[Comments]
+      ,tasks.[PointsTotal]
+      ,tasks.[AddedPointsTotal]
+      ,tasks.[StartTime]
+      ,tasks.[EndTime]
+      ,tasks.[ExpectedEndTime]
+      ,tasks.[TaskDone]
+      ,tasks.[TaskDeleted]
+      ,tasks.[TaskArchived]
+      ,tasks.[ExtensionReason]
+      ,tasks.[AddedReason]
+      ,tasks.[TrelloTaskId]
+	  ,ut.UserId
+	  INTO #tempTable
+  FROM [dbo].[UserTasks]as ut
+   LEFT JOIN [dbo].[Tasks] as tasks on tasks.TaskId = ut.TaskId
+
+  select * from #tempTable
+  where #tempTable.UserId = @UserId
+
+   DROP TABLE #tempTable";
     }
 }

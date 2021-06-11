@@ -106,11 +106,15 @@ namespace DAL.Repository
             var userProjects = new List<ProjectDto>();
             foreach (var project in projectDto)
             {
+                var projectPointsTotal = 0;
+                var projectAdditionalPoints = 0;
+                var totalTimelogPoints = 0.0;
                 var columns = new List<ColumnDto>();
                 foreach (var columnDto in enumeratedColumnDtos)
                 {
                     if (project.ProjectId == columnDto.ProjectId)
                     {
+
                         var newColumnDto = columnDto;
                         foreach (var taskViewDto in enumeratedTaskDtos)
                         {
@@ -131,6 +135,8 @@ namespace DAL.Repository
                                 //
 
                                 var task = new TaskDto(taskViewDto);
+                                projectPointsTotal = projectPointsTotal + task.Points;
+                                projectAdditionalPoints = projectAdditionalPoints + task.AddedPoints;
                                 var timelogs = thisTasksTimelogs.Select(t => t).ToList();
                                 var users = thisUsers.Select(u => u).ToList();
                                 // Add the timelogs to the task
@@ -148,15 +154,23 @@ namespace DAL.Repository
                                     task.Timelogs = new List<TimeLogViewDto>();
                                 }
 
+                              
                                 foreach (var timelog in timelogs)
                                 {
                                     if (timelog.linkTimelogTaskId == task.TaskId)
                                     {
                                         task.Timelogs = task.Timelogs.Append(timelog);
+                                        if (timelog.Billable == "true")
+                                        {
+                                            var totalPoints = (timelog.TotalTime * 60) / project.TimeIncrement;
+                                            totalTimelogPoints = totalTimelogPoints + totalPoints;
+                                        }
+
                                     }
 
                                 }
 
+                               
                                 if (task.Users == null)
                                 {
                                     task.Users = new List<UserViewDto>();
@@ -167,17 +181,22 @@ namespace DAL.Repository
                                     if (user.linkUserTaskId == task.TaskId)
                                     {
                                         task.Users = task.Users.Append(user);
+                                        // append to the list, doesnt break the ienumerable, is just worked out at the next .ToList()
+                                        
                                     }
 
                                 }
-
-                                // append to the list, doesnt break the ienumerable, is just worked out at the next .ToList()
                                 newColumnDto.Tasks = newColumnDto.Tasks.Append(task);
+
                             }
                         }
 
                         columns.Add(newColumnDto);
+
                     }
+                    project.PointsTotal = projectPointsTotal;
+                    project.AddedPoints = projectAdditionalPoints;
+                    project.PointsAchived = (float)totalTimelogPoints;
                 }
                 userProjects.Add(new ProjectDto(project, usersDtos, columns));
             }
@@ -205,11 +224,15 @@ namespace DAL.Repository
             var userProjects = new List<ProjectDto>();
             foreach (var project in projectDto)
             {
+                var projectPointsTotal = 0;
+                var projectAdditionalPoints = 0;
+                var totalTimelogPoints = 0.0;
                 var columns = new List<ColumnDto>();
                 foreach (var columnDto in enumeratedColumnDtos)
                 {
                     if (project.ProjectId == columnDto.ProjectId)
                     {
+                       
                         var newColumnDto = columnDto;
                         foreach (var taskViewDto in enumeratedTaskDtos)
                         {
@@ -230,6 +253,8 @@ namespace DAL.Repository
                                 //
 
                                 var task = new TaskDto(taskViewDto);
+                                projectPointsTotal = projectPointsTotal + task.Points;
+                                projectAdditionalPoints = projectAdditionalPoints + task.AddedPoints;
                                 var timelogs = thisTasksTimelogs.Select(t => t).ToList();
                                 var users = thisUsers.Select(u => u).ToList();
                                 // Add the timelogs to the task
@@ -247,15 +272,23 @@ namespace DAL.Repository
                                     task.Timelogs = new List<TimeLogViewDto>();
                                 }
 
+                               
                                 foreach (var timelog in timelogs)
                                 {
                                     if (timelog.linkTimelogTaskId == task.TaskId)
                                     {
                                         task.Timelogs = task.Timelogs.Append(timelog);
+                                        if (timelog.Billable == "true")
+                                        {
+                                            var totalPoints = (timelog.TotalTime * 60 ) / project.TimeIncrement ;
+                                            totalTimelogPoints = totalTimelogPoints + totalPoints;
+                                        }
+                                       
                                     }
 
                                 }
 
+                                
                                 if (task.Users == null)
                                 {
                                     task.Users = new List<UserViewDto>();
@@ -276,11 +309,14 @@ namespace DAL.Repository
                         }
 
                         columns.Add(newColumnDto);
+                       
                     }
+                    project.PointsTotal = projectPointsTotal;
+                    project.AddedPoints = projectAdditionalPoints;
+                    project.PointsAchived = (float)totalTimelogPoints;
                 }
                 userProjects.Add(new ProjectDto(project, usersDtos, columns));
             }
-
             return userProjects;
         }
 
@@ -310,7 +346,7 @@ namespace DAL.Repository
 
         public IEnumerable<TaskDto> GetUserTasks(int userId)
         {
-            var result = ExecuteFunc(con => con.Query<TaskDto>(ProjectSql.GetUserstasks,
+            var result = ExecuteFunc(con => con.Query<TaskDto>(ProjectSql.GetUserTasks,
                 new
                 {
                     UserId = userId
@@ -477,6 +513,12 @@ namespace DAL.Repository
         {
             var result = ExecuteFunc(con =>
                 con.QuerySingleOrDefault<int>(ProjectSql.SetColumnTask, new { ColumnId = columndId, TaskId = taskId }));
+            return result;
+        }
+        public int MoveCard(int columndId, int taskId)
+        {
+            var result = ExecuteFunc(con =>
+                con.QuerySingleOrDefault<int>(ProjectSql.MoveTask, new { ColumnId = columndId, TaskId = taskId }));
             return result;
         }
 

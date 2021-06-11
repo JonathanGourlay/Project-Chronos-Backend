@@ -150,6 +150,13 @@ namespace Project_Chronos_Backend.Controllers
             return MapToIActionResult(() => _projectFacade.SetColumnTask(columnId,taskId));
         }
         [HttpPost]
+        [Route("MoveTask")]
+        [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
+        public IActionResult MoveTask(int columnId, int taskId)
+        {
+            return MapToIActionResult(() => _projectFacade.MoveCard(columnId, taskId));
+        }
+        [HttpPost]
         [Route("UpdateTimeLog")]
         [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
         public IActionResult UpdateTimeLog([FromBody]UpdateTimeLog timelog)

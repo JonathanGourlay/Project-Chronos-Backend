@@ -31,5 +31,6 @@ namespace BLL.Interfaces
         int UpdateTimeLog(UpdateTimeLog timelog);
         int UpdateUser(UpdateUser user);
         int SetColumnTask(int columndId, int taskId);
+        int MoveCard(int columndId, int taskId);
     }
 }
