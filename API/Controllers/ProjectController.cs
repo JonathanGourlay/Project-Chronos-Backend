@@ -58,6 +58,13 @@ namespace Project_Chronos_Backend.Controllers
             return MapToIActionResult(() => _projectFacade.GetUserTasks(userId));
         }
         [HttpPost]
+        [Route("GetUserTimelogs")]
+        [ProducesResponseType(typeof(List<TimeLogDto>), 200)]
+        public IActionResult UserTimelogs([FromBody] int userId)
+        {
+            return MapToIActionResult(() => _projectFacade.UserTimelogs(userId));
+        }
+        [HttpPost]
         [Route("CheckLogin")]
         [ProducesResponseType(typeof(UserDto), 200)]
         public IActionResult CheckLogin([FromBody] LoginObject details)

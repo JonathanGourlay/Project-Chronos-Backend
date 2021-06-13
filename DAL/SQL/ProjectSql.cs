@@ -492,8 +492,8 @@
 		tasks.[TaskId]
       ,tasks.[TaskName]
       ,tasks.[Comments]
-      ,tasks.[PointsTotal]
-      ,tasks.[AddedPointsTotal]
+      ,tasks.[PointsTotal] as Points
+      ,tasks.[AddedPointsTotal] as AddedPoints
       ,tasks.[StartTime]
       ,tasks.[EndTime]
       ,tasks.[ExpectedEndTime]
@@ -504,13 +504,52 @@
       ,tasks.[AddedReason]
       ,tasks.[TrelloTaskId]
 	  ,ut.UserId
+	  ,t.TimeLogId
+	  ,t.Billable
+	  ,t.StartTime as timeStart
+	  ,t.EndTime as timeEnd
+	  
 	  INTO #tempTable
   FROM [dbo].[UserTasks]as ut
    LEFT JOIN [dbo].[Tasks] as tasks on tasks.TaskId = ut.TaskId
+   LEFT JOIN UserTimeLogs as uti on ut.UserId = @UserId
+   JOIN TimeLogs as t on uti.TimeLogId = t.TimeLogId
 
-  select * from #tempTable
+  select DISTINCT [TaskId]
+      ,[TaskName]
+      ,[Comments]
+      ,Points as [PointsTotal] 
+      , AddedPoints  as [AddedPointsTotal]
+      ,[StartTime]
+      ,[EndTime]
+      ,[ExpectedEndTime]
+      ,[TaskDone]
+      ,[TaskDeleted]
+      ,[TaskArchived]
+      ,[ExtensionReason]
+      ,[AddedReason]
+      ,[TrelloTaskId]
+	  ,UserId from #tempTable
+  
   where #tempTable.UserId = @UserId
+  select TimeLogId, Billable, timeStart as StartTime, timeEnd as EndTime from #tempTable as Timelogs
 
+   DROP TABLE #tempTable";
+        public static string GetUserTimelogs = @" SELECT
+	  uti.UserId
+	  ,t.TimeLogId
+	  ,t.Billable
+      ,t.TotalTime
+	  ,t.StartTime as timeStart
+	  ,t.EndTime as timeEnd
+	  
+	  INTO #tempTable
+  FROM  UserTimeLogs as uti 
+   JOIN TimeLogs as t on uti.TimeLogId = t.TimeLogId
+
+  select *from #tempTable
+  
+  where #tempTable.UserId = @UserId
    DROP TABLE #tempTable";
     }
 }

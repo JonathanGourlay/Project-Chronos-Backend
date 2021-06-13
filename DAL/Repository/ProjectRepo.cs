@@ -182,11 +182,12 @@ namespace DAL.Repository
                                     {
                                         task.Users = task.Users.Append(user);
                                         // append to the list, doesnt break the ienumerable, is just worked out at the next .ToList()
-                                        
+                                        newColumnDto.Tasks = newColumnDto.Tasks.Append(task);
                                     }
 
                                 }
-                                newColumnDto.Tasks = newColumnDto.Tasks.Append(task);
+                                
+                               
 
                             }
                         }
@@ -560,6 +561,12 @@ namespace DAL.Repository
             return result;
         }
 
+        public IEnumerable<TimeLogDto> UserTimelogs(int userId)
+        {
+            var result = ExecuteFunc(con =>
+                con.Query<TimeLogDto>(ProjectSql.GetUserTimelogs, new { UserId = userId }));
+            return result;
+        }
         public int DeleteColumn(int columnId)
         {
             return 1;

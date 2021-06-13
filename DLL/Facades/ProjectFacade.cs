@@ -43,6 +43,11 @@ namespace BLL.Facades
             return tasks;
         }
 
+        public IEnumerable<TimeLogDto> UserTimelogs(int userId)
+        {
+            return _projectRepo.UserTimelogs(userId);
+        }
+
         public UserDto CheckLogin(string email, string password)
         {
             return _projectRepo.CheckLogin(email, password);

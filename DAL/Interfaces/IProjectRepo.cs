@@ -32,5 +32,6 @@ namespace DAL.Interfaces
         int UpdateUser(UpdateUser user);
         int SetColumnTask(int columndId, int taskId);
         int MoveCard(int columndId, int taskId);
+        public IEnumerable<TimeLogDto> UserTimelogs(int userId);
     }
 }
